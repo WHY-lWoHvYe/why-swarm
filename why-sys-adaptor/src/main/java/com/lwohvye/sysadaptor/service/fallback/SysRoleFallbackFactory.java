@@ -56,6 +56,11 @@ public class SysRoleFallbackFactory implements FallbackFactory<ISysRoleFeignClie
             public ResponseEntity<Object> delete(Set<Long> ids) {
                 return new ResponseEntity<>(ResultInfo.failed("删除失败，系统繁忙"), HttpStatus.OK);
             }
+
+            @Override
+            public ResponseEntity<Object> queryByUid(Long userId) {
+                return null;
+            }
         };
     }
 }

@@ -17,10 +17,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
         <!-- Spring boot websocket -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -30,16 +26,6 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
-        </dependency>
-        <!--   负载均衡loadbalancer，替代ribbon     -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-        </dependency>
-        <!--    调用映射openfeign    -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
         <!--  服务注册与发现、配置中心nacos  -->
         <dependency>
@@ -64,7 +50,7 @@
 
         <dependency>
             <groupId>com.lwohvye</groupId>
-            <artifactId>why-api</artifactId>
+            <artifactId>why-sys-adaptor</artifactId>
             <version>${project.core.version}</version>
         </dependency>
 
@@ -83,6 +69,12 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
             <version>${jjwt.version}</version>
+        </dependency>
+
+        <!-- Java图形验证码。该项目在gitee上有 -->
+        <dependency>
+            <groupId>com.github.whvcse</groupId>
+            <artifactId>easy-captcha</artifactId>
         </dependency>
     </dependencies>
 

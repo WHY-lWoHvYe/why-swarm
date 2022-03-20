@@ -15,8 +15,9 @@
  */
 package com.lwohvye.gateway.security.handler;
 
-import com.lwohvye.gateway.security.enums.UserTypeEnum;
+import com.lwohvye.constant.SecurityConstant;
 import com.lwohvye.gateway.security.annotation.UserTypeHandlerAnno;
+import com.lwohvye.gateway.security.enums.UserTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,18 +30,17 @@ import java.util.stream.Collectors;
 
 /**
  * @author Hongyan Wang
- * @date 2021年11月02日 19:25
+ * @date 2021年11月02日 19:22
  */
 @Slf4j
 @Component
-@UserTypeHandlerAnno(UserTypeEnum.DEV)
-public final class DevUserTypeHandler implements AUserTypeHandler {
+@UserTypeHandlerAnno(UserTypeEnum.ADMIN)
+public final class AdminUserTypeStrategy implements AUserTypeStrategy {
     @Override
-    public List<GrantedAuthority> handler(Long userId) {
-        log.warn(" salted fish：reverse。");
+    public List<GrantedAuthority> grantedAuth(Long userId) {
+        log.warn(" billy：吾乃新日暮里的王，三界哲学的主宰。");
         Set<String> permissions = new HashSet<>();
-        // 这里只是随便写一下，正常是走不到这个handler的
-        permissions.add("ROLE_DEV");
+        permissions.add(SecurityConstant.ROLE_ADMIN);
         return permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 }

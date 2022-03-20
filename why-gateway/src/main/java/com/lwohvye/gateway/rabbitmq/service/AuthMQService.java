@@ -18,12 +18,11 @@ package com.lwohvye.gateway.rabbitmq.service;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
-import com.lwohvye.gateway.security.service.UserCacheClean;
-import com.lwohvye.modules.rabbitmq.config.RabbitMqConfig;
-import com.lwohvye.modules.rabbitmq.service.RabbitMQProducerService;
-import com.lwohvye.modules.system.service.IUserService;
-import com.lwohvye.rabbitmq.AmqpMsgEntity;
-import com.lwohvye.utils.JsonUtils;
+import com.lwohvye.gateway.security.service.UserLocalCache;
+import com.lwohvye.modules.system.domain.vo.UserBaseVo;
+import com.lwohvye.sysadaptor.service.ISysUserFeignClientService;
+import com.lwohvye.utils.json.JsonUtils;
+import com.lwohvye.utils.rabbitmq.AmqpMsgEntity;
 import com.lwohvye.utils.redis.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,8 @@ public class AuthMQService {
     public void saveAuthorizeLog(String record) {
         var logMap = Map.of("description", "记录用户登录信息", "logType", "Auth", "params", record);
         var logMsg = new AmqpMsgEntity().setMsgType("authLog").setMsgData(JsonUtils.toJSONString(logMap));
-        rabbitMQProducerService.sendMsg(RabbitMqConfig.TOPIC_SYNC_EXCHANGE, RabbitMqConfig.LOG_ROUTER_KEY, logMsg);
+        // TODO: 2022/3/20 消费侧
+        rabbitMQProducerService.sendMsg(RabbitMqGatewayConfig.TOPIC_SYNC_EXCHANGE, RabbitMqGatewayConfig.LOG_ROUTER_KEY, logMsg);
     }
     //    ----------------------登录失败-----------------------------
 
@@ -58,10 +58,10 @@ public class AuthMQService {
     private RedisUtils redisUtils;
 
     @Autowired
-    private IUserService userService;
+    private ISysUserFeignClientService userFeignClientService;
 
     @Autowired
-    private UserCacheClean userCacheClean;
+    private UserLocalCache userLocalCache;
 
     @Autowired
     private RabbitMQProducerService rabbitMQProducerService;
@@ -101,9 +101,9 @@ public class AuthMQService {
             // TODO: 2022/1/4 锁定与解锁交由相关模块处理
 
 //                  修改用户状态为锁定
-            userService.updateEnabled(username, false);
+            userFeignClientService.updateStatus(new UserBaseVo().setUsername(username).setEnabled(false));
 //                  删除缓存中的用户信息
-            userCacheClean.cleanUserCache(username);
+            userLocalCache.cleanUserCache(username, false);
 //                  超过5次锁定一小时。创建延迟解锁消息
             var wait4Unlock = new AmqpMsgEntity().setMsgType("auth").setMsgData(username).setExtraData("unlockUser")
                     .setExpire(1L).setTimeUnit(TimeUnit.HOURS);
@@ -116,9 +116,9 @@ public class AuthMQService {
     public void unlockUser(String record) {
         if (StrUtil.isBlank(record))
             return;
-        userService.updateEnabled(record, true);
+        userFeignClientService.updateStatus(new UserBaseVo().setUsername(record).setEnabled(true));
 //              删除缓存中的用户信息
-        userCacheClean.cleanUserCache(record);
+        userLocalCache.cleanUserCache(record, false);
     }
 
 }

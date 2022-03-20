@@ -34,6 +34,11 @@ public class SysResourceFallbackFactory implements FallbackFactory<ISysResourceF
             public ResponseEntity<Object> delete(Long[] ids) {
                 return new ResponseEntity<>(ResultInfo.failed("删除失败，系统繁忙"), HttpStatus.OK);
             }
+
+            @Override
+            public ResponseEntity<Object> queryAllRes() {
+                return new ResponseEntity<>(ResultInfo.failed("请稍后重试"), HttpStatus.OK);
+            }
         };
     }
 }

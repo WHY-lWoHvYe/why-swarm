@@ -15,7 +15,9 @@
  */
 package com.lwohvye.gateway.security.config;
 
-import com.lwohvye.modules.rabbitmq.config.RabbitMqConfig;
+import com.lwohvye.config.security.SimpleSecurityConfig;
+import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
+import com.lwohvye.gateway.rabbitmq.service.RabbitMQProducerService;
 import com.lwohvye.gateway.security.config.bean.SecurityProperties;
 import com.lwohvye.gateway.security.security.CustomAccessDecisionManager;
 import com.lwohvye.gateway.security.security.JwtAuthTokenConfigurer;
@@ -26,15 +28,15 @@ import com.lwohvye.gateway.security.security.handler.CustomLogoutHandler;
 import com.lwohvye.gateway.security.security.handler.CustomLogoutSuccessHandler;
 import com.lwohvye.gateway.security.security.handler.JwtAccessDeniedHandler;
 import com.lwohvye.gateway.security.security.handler.JwtAuthenticationEntryPoint;
-import com.lwohvye.gateway.security.service.IResourceFeignClientService;
 import com.lwohvye.gateway.security.service.dto.JwtUserDto;
-import com.lwohvye.rabbitmq.AmqpMsgEntity;
-import com.lwohvye.modules.rabbitmq.service.RabbitMQProducerService;
-import com.lwohvye.utils.JsonUtils;
-import com.lwohvye.utils.ResultUtil;
+import com.lwohvye.sysadaptor.service.ISysResourceFeignClientService;
 import com.lwohvye.utils.StringUtils;
+import com.lwohvye.utils.json.JsonUtils;
+import com.lwohvye.utils.rabbitmq.AmqpMsgEntity;
+import com.lwohvye.utils.result.ResultUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
@@ -68,6 +70,7 @@ import java.util.Objects;
  * @author Zheng Jie,Hongyan Wang
  */
 @ConditionalOnExpression("!${local.sys.multi-security:false}") // 这里用了取反。非multi时开启。默认开启
+@ConditionalOnMissingBean(SimpleSecurityConfig.class) // 如果使用了简单配置，就不加载本配置了
 @Configuration
 // 添加该注解到@Configuration的类上，应用程序便可以使用自定义的WebSecurityConfigurer或拓展自WebSecurityConfigurerAdapter的配置类来装配Spring Security框架。
 @EnableWebSecurity
@@ -85,7 +88,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtAuthenticationEntryPoint authenticationErrorHandler;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final UserDetailsService userDetailsService;
-    private final IResourceFeignClientService resourceFeignClientService;
+    private final ISysResourceFeignClientService resourceFeignClientService;
     private final RabbitMQProducerService rabbitMQProducerService;
 
     @Bean
@@ -218,7 +221,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             final JwtUserDto jwtUserDto = (JwtUserDto) authentication.getPrincipal();
             // 用户登录成功后，写一条消息
             var authSuccessMsg = new AmqpMsgEntity().setMsgType("auth").setMsgData(jwtUserDto.getUser().toString()).setExtraData("saveAuthorizeLog");
-            rabbitMQProducerService.sendMsg(RabbitMqConfig.DIRECT_SYNC_EXCHANGE, RabbitMqConfig.AUTH_LOCAL_ROUTE_KEY, authSuccessMsg);
+            rabbitMQProducerService.sendMsg(RabbitMqGatewayConfig.DIRECT_SYNC_EXCHANGE, RabbitMqGatewayConfig.AUTH_LOCAL_ROUTE_KEY, authSuccessMsg);
 
             // 返回 token 与 用户信息
             var authInfo = Map.of("token", properties.getTokenStartWith() + token, "user", jwtUserDto);
@@ -251,7 +254,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     infoMap.put("lockedIp", lockedIp);
                     var authFailedMsg = new AmqpMsgEntity().setMsgType("auth").setMsgData(JsonUtils.toJSONString(infoMap)).setExtraData("solveAuthFailed");
                     //  发送消息
-                    rabbitMQProducerService.sendMsg(RabbitMqConfig.DIRECT_SYNC_EXCHANGE, RabbitMqConfig.AUTH_LOCAL_ROUTE_KEY, authFailedMsg);
+                    rabbitMQProducerService.sendMsg(RabbitMqGatewayConfig.DIRECT_SYNC_EXCHANGE, RabbitMqGatewayConfig.AUTH_LOCAL_ROUTE_KEY, authFailedMsg);
                 }
             }
             // 返回错误信息。用下面的sendError会被EntryPoint拦截并覆盖。

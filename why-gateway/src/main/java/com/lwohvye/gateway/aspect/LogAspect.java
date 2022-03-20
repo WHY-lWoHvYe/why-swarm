@@ -15,11 +15,15 @@
  */
 package com.lwohvye.gateway.aspect;
 
+
 import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
-import com.lwohvye.modules.rabbitmq.config.RabbitMqConfig;
-import com.lwohvye.modules.rabbitmq.service.RabbitMQProducerService;
-import com.lwohvye.rabbitmq.AmqpMsgEntity;
-import com.lwohvye.utils.*;
+import com.lwohvye.gateway.rabbitmq.service.RabbitMQProducerService;
+import com.lwohvye.utils.RequestHolder;
+import com.lwohvye.utils.SecurityUtils;
+import com.lwohvye.utils.StringUtils;
+import com.lwohvye.utils.ThrowableUtil;
+import com.lwohvye.utils.json.JsonUtils;
+import com.lwohvye.utils.rabbitmq.AmqpMsgEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -43,7 +47,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LogAspect {
 
-    private RabbitMQProducerService rabbitMQProducerService;
+    private final RabbitMQProducerService rabbitMQProducerService;
 
     ThreadLocal<Long> currentTime = new ThreadLocal<>();
 
@@ -71,7 +75,7 @@ public class LogAspect {
         var logMap = Map.of("logType", "INFO", "time", time,
                 "username", getUsername(), "browser", StringUtils.getBrowser(request), "ip", StringUtils.getIp(request), "joinPoint", joinPoint);
         var logMsg = new AmqpMsgEntity().setMsgType("APILog").setMsgData(JsonUtils.toJSONString(logMap));
-        rabbitMQProducerService.sendMsg(RabbitMqConfig.TOPIC_SYNC_EXCHANGE, RabbitMqConfig.LOG_ROUTER_KEY, logMsg);
+        rabbitMQProducerService.sendMsg(RabbitMqGatewayConfig.TOPIC_SYNC_EXCHANGE, RabbitMqGatewayConfig.LOG_ROUTER_KEY, logMsg);
         return result;
     }
 
@@ -89,7 +93,7 @@ public class LogAspect {
         var logMap = Map.of("logType", "ERROR", "time", time, "exceptionDetail", ThrowableUtil.getStackTrace(e).getBytes(),
                 "username", getUsername(), "browser", StringUtils.getBrowser(request), "ip", StringUtils.getIp(request), "joinPoint", joinPoint);
         var logMsg = new AmqpMsgEntity().setMsgType("APILog").setMsgData(JsonUtils.toJSONString(logMap));
-        rabbitMQProducerService.sendMsg(RabbitMqConfig.TOPIC_SYNC_EXCHANGE, RabbitMqConfig.LOG_ROUTER_KEY, logMsg);
+        rabbitMQProducerService.sendMsg(RabbitMqGatewayConfig.TOPIC_SYNC_EXCHANGE, RabbitMqGatewayConfig.LOG_ROUTER_KEY, logMsg);
     }
 
     public String getUsername() {

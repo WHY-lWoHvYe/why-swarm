@@ -1,6 +1,7 @@
 package com.lwohvye.sysadaptor.service.fallback;
 
 import com.lwohvye.modules.system.domain.User;
+import com.lwohvye.modules.system.domain.vo.UserBaseVo;
 import com.lwohvye.modules.system.domain.vo.UserPassVo;
 import com.lwohvye.modules.system.service.dto.UserQueryCriteria;
 import com.lwohvye.sysadaptor.service.ISysUserFeignClientService;
@@ -35,6 +36,11 @@ public class SysUserFallbackFactory implements FallbackFactory<ISysUserFeignClie
             }
 
             @Override
+            public ResponseEntity<Object> updateStatus(UserBaseVo userVo) {
+                return new ResponseEntity<>(ResultInfo.failed("提交失败，请稍后重试"), HttpStatus.NO_CONTENT);
+            }
+
+            @Override
             public ResponseEntity<Object> center(User resources) {
                 return new ResponseEntity<>(ResultInfo.failed("提交失败，系统繁忙"), HttpStatus.NO_CONTENT);
             }
@@ -57,6 +63,11 @@ public class SysUserFallbackFactory implements FallbackFactory<ISysUserFeignClie
             @Override
             public ResponseEntity<Object> updateEmail(String code, User user) throws Exception {
                 return new ResponseEntity<>(ResultInfo.failed("提交失败，请稍后重试"), HttpStatus.OK);
+            }
+
+            @Override
+            public ResponseEntity<Object> queryByName(String username) {
+                return new ResponseEntity<>(ResultInfo.failed("请稍后重试"), HttpStatus.OK);
             }
         };
     }

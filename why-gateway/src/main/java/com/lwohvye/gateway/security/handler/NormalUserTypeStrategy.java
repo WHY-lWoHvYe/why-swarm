@@ -17,16 +17,15 @@ package com.lwohvye.gateway.security.handler;
 
 import com.lwohvye.gateway.security.annotation.UserTypeHandlerAnno;
 import com.lwohvye.gateway.security.enums.UserTypeEnum;
-import com.lwohvye.gateway.security.service.IRoleFeignClientService;
 import com.lwohvye.modules.system.service.dto.RoleSmallDto;
+import com.lwohvye.sysadaptor.service.ISysRoleFeignClientService;
 import com.lwohvye.utils.SpringContextHolder;
-import com.lwohvye.utils.result.ResultInfo;
+import com.lwohvye.utils.result.ResultUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,25 +38,27 @@ import java.util.stream.Collectors;
 // 不能用下面这个注解，因为这个的使用方式，决定了要使用空参构造初始化。对于需要注入的对象，需特殊处理
 //@RequiredArgsConstructor
 @UserTypeHandlerAnno(UserTypeEnum.NORMAL)
-@SuppressWarnings("unchecked")
-public final class NormalUserTypeHandler implements AUserTypeHandler {
+public final class NormalUserTypeStrategy implements AUserTypeStrategy {
 
-    private IRoleFeignClientService roleFeignClientService;
+    private ISysRoleFeignClientService roleFeignClientService;
 
+    /**
+     * 属性注入。这里不使用@PostConstruct后置处理，是因为之前有验证在执行后置处理的时候，SpringContextHolder还无法获取到相关的bean（因为applicationContext还未注入）
+     * 另，当下@PostConstruct并未被执行，这个跟使用@Autowire未注入roleRepository这两个问题，后续研究一下
+     *
+     * @date 2022/3/13 6:03 PM
+     */
     @Override
     public void doInit() {
-        this.roleFeignClientService = SpringContextHolder.getBean(IRoleFeignClientService.class);
+        this.roleFeignClientService = SpringContextHolder.getBean(ISysRoleFeignClientService.class);
     }
 
     @Override
-    public List<GrantedAuthority> handler(Long userId) {
+    public List<GrantedAuthority> grantedAuth(Long userId) {
         log.warn(" banana：自由的气息，蕉迟但到。");
-        List<RoleSmallDto> roles;
         var roleEntity = roleFeignClientService.queryByUid(userId);
-        if (roleEntity.getBody() instanceof ResultInfo<?> resultInfo) {
-            roles = (List<RoleSmallDto>) resultInfo.getContent();
-            var permissions = roles.stream().map(role -> "ROLE_" + role.getCode().toUpperCase()).collect(Collectors.toSet());
-            return permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-        } else return Collections.emptyList();
+        var roles = ResultUtil.getListFromResp(roleEntity, RoleSmallDto.class);
+        var permissions = roles.stream().map(role -> "ROLE_" + role.getCode().toUpperCase()).collect(Collectors.toSet());
+        return permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 }

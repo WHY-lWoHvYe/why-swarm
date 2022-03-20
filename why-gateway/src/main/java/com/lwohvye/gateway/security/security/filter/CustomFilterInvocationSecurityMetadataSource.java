@@ -17,9 +17,9 @@ package com.lwohvye.gateway.security.security.filter;
 
 import com.lwohvye.constant.SecurityConstant;
 import com.lwohvye.gateway.security.config.SpringSecurityConfig;
-import com.lwohvye.gateway.security.service.IResourceFeignClientService;
 import com.lwohvye.modules.system.service.dto.ResourceDto;
-import com.lwohvye.utils.result.ResultInfo;
+import com.lwohvye.sysadaptor.service.ISysResourceFeignClientService;
+import com.lwohvye.utils.result.ResultUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
@@ -44,7 +44,7 @@ public class CustomFilterInvocationSecurityMetadataSource implements FilterInvoc
 
     PathMatcher antPathMatcher = new AntPathMatcher();  //用来实现ant风格的Url匹配
 
-    private final IResourceFeignClientService resourceFeignClientService;
+    private final ISysResourceFeignClientService resourceFeignClientService;
 
 
     /**
@@ -65,16 +65,14 @@ public class CustomFilterInvocationSecurityMetadataSource implements FilterInvoc
         // Lookup your database (or other source) using this information and populate the
         // list of attributes
         var resourcesEntity = resourceFeignClientService.queryAllRes();
-        if (resourcesEntity.getBody() instanceof ResultInfo<?> resultInfo) {
-            var resources = (List<ResourceDto>) resultInfo.getContent();
-            securityConfigs = resources.stream() //获取数据库中的所有资源信息，即本案例中的resource以及对应的role
-                    .filter(resource -> antPathMatcher.match(resource.getPattern(), url) // URI匹配
-                                        && !resource.getRoleCodes().isEmpty() // 有关联角色（需要特定角色权限）
-                                        && (Objects.isNull(resource.getReqMethod()) || Objects.equals(resource.getReqMethod(), httpMethod))) // 请求方法类型匹配。资源未配置请求方法视为全部
-                    .flatMap(resource -> resource.getRoleCodes().stream()) // 用flatMap合并流
-                    .distinct() // 排重。到这里，因为是角色级别的，理论上不会太多，排重与否影响不大
-                    .map(role -> new SecurityConfig("ROLE_" + role.trim())).toList(); // 需注意，toList的结果是ImmutableCollections
-        } else securityConfigs = Collections.emptyList();
+        var resources = ResultUtil.getListFromResp(resourcesEntity, ResourceDto.class);
+        securityConfigs = resources.stream() //获取数据库中的所有资源信息，即本案例中的resource以及对应的role
+                .filter(resource -> antPathMatcher.match(resource.getPattern(), url) // URI匹配
+                                    && !resource.getRoleCodes().isEmpty() // 有关联角色（需要特定角色权限）
+                                    && (Objects.isNull(resource.getReqMethod()) || Objects.equals(resource.getReqMethod(), httpMethod))) // 请求方法类型匹配。资源未配置请求方法视为全部
+                .flatMap(resource -> resource.getRoleCodes().stream()) // 用flatMap合并流
+                .distinct() // 排重。到这里，因为是角色级别的，理论上不会太多，排重与否影响不大
+                .map(role -> new SecurityConfig("ROLE_" + role.trim())).toList(); // 需注意，toList的结果是ImmutableCollections
         if (!securityConfigs.isEmpty())
             attributes = new ArrayList<>(securityConfigs); // 构建返回
         else attributes = Collections.singletonList(new SecurityConfig(SecurityConstant.ROLE_LOGIN)); //如果请求Url在资源表中不存在相应的模式，则该请求登陆后即可访问
