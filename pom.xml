@@ -25,7 +25,7 @@
     <packaging>pom</packaging>
     <version>2.2022.0</version>
 
-    <name>EL-ADMIN 管理系统</name>
+    <name>why-swarm</name>
     <url>https://github.com/lWoHvYe/eladmin</url>
     <description>A Spring Boot Project With Jpa JWT Security and so on</description>
 
@@ -53,13 +53,12 @@
     </scm>
 
     <modules>
-        <module>why-common</module>
-        <module>why-api</module>
-        <module>why-logging</module>
-        <module>why-system</module>
-        <module>why-tools</module>
-        <module>why-generator</module>
-        <module>why-gateway</module>
+<!--        <module>why-logging</module>-->
+<!--        <module>why-system</module>-->
+        <module>why-sys-adaptor</module>
+<!--        <module>why-tools</module>-->
+<!--        <module>why-generator</module>-->
+<!--        <module>why-gateway</module>-->
     </modules>
 
     <!--    <parent>-->
@@ -77,6 +76,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
         <project.core.version>2.2022.0</project.core.version>
+        <el.core.version>3.0.1</el.core.version>
         <spring-boot.version>2.4.13</spring-boot.version>
         <spring-cloud.version>2020.0.4</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
@@ -103,205 +103,10 @@
         <yauaa.version>6.6</yauaa.version>
         <ip2region.version>2.6.0</ip2region.version>
         <thumbnailator.version>0.4.15</thumbnailator.version>
-        <pdfbox.version>2.0.25</pdfbox.version>
-        <xmlsec.version>2.3.0</xmlsec.version>
-        <xmlgraphics.version>2.6</xmlgraphics.version>
-        <batik.version>1.14</batik.version>
         <argLine>
             -Dfile.encoding=UTF-8
         </argLine>
     </properties>
-
-    <dependencies>
-        <!-- Redisson -->
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson-spring-boot-starter</artifactId>
-            <version>${redisson.version}</version>
-        </dependency>
-
-        <!--监控sql日志-->
-        <dependency>
-            <groupId>org.bgee.log4jdbc-log4j2</groupId>
-            <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
-            <version>${log4jdbc.version}</version>
-        </dependency>
-
-        <!-- Swagger UI 相关 -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${springdoc.openapi.version}</version>
-        </dependency>
-        <!--    his dependency helps ignoring @AuthenticationPrincipal in case its used on REST Controllers    -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-security</artifactId>
-            <version>${springdoc.openapi.version}</version>
-        </dependency>
-        <!--    enable the support of spring Pageable Type    -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-data-rest</artifactId>
-            <version>${springdoc.openapi.version}</version>
-        </dependency>
-        <!--   enable javadoc support     -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-javadoc</artifactId>
-            <version>${springdoc.openapi.version}</version>
-        </dependency>
-        <!--    swagger-core依赖该包，部分原因，需单独升级依赖版本    -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>31.0.1-jre</version>
-        </dependency>
-
-        <!-- druid数据源驱动 ; 注：使用shardingsphere时。这里不能用druid但spring-boot-starter -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-            <version>${druid.version}</version>
-            <!--      不兼容Jdk 11 及以上版本，移除依赖 https://github.com/alibaba/druid/issues/3060      -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>jconsole</artifactId>
-                    <groupId>com.sun</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>tools</artifactId>
-                    <groupId>com.sun</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- ip2region IP库 -->
-        <dependency>
-            <groupId>net.dreamlu</groupId>
-            <artifactId>mica-ip2region</artifactId>
-            <version>${ip2region.version}</version>
-        </dependency>
-
-        <!-- excel工具 -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>${poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>${poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>${xerces.version}</version>
-        </dependency>
-
-        <!--mapStruct依赖-->
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${mapstruct.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct-processor</artifactId>
-            <version>${mapstruct.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <!--   具体可以看看这个，https://jcp.org/en/jsr/detail?id=330     -->
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
-        </dependency>
-
-        <!-- Java图形验证码。该项目闭源，后续找找替代方案 -->
-        <dependency>
-            <groupId>com.github.whvcse</groupId>
-            <artifactId>easy-captcha</artifactId>
-            <version>1.6.2</version>
-        </dependency>
-
-        <!-- 解析客户端操作系统、浏览器信息 -->
-        <dependency>
-            <groupId>nl.basjes.parse.useragent</groupId>
-            <artifactId>yauaa</artifactId>
-            <version>${yauaa.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-collections4</artifactId>
-                    <groupId>org.apache.commons</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- logstash -->
-        <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
-            <version>${logstash.version}</version>
-            <!-- Use runtime scope if the project does not have any compile-time usage of logstash-logback-encoder,
-                such as usage of StructuredArguments/Markers or implementations such as
-                JsonProvider, AppenderListener, JsonFactoryDecorator, JsonGeneratorDecorator, etc
-            <scope>runtime</scope>
-            -->
-        </dependency>
-        <!--图片处理。主要为调整图片的尺寸-->
-        <dependency>
-            <groupId>net.coobird</groupId>
-            <artifactId>thumbnailator</artifactId>
-            <version>${thumbnailator.version}</version>
-        </dependency>
-        <!--   fixed dependencies of plugins with threat    -->
-        <!--   下面几个依赖的具体用途
-        Apache XML Graphics Commons is a library that consists of several reusable components used by Apache Batik and Apache FOP.
-        Many of these components can easily be used separately outside the domains of SVG and XSL-FO.
-        You'll find components such as a PDF library, an RTF library, Graphics2D implementations that let you generate PDF and PostScript files and much more.     -->
-        <!--   4pdfbox     -->
-        <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
-        <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-            <version>${pdfbox.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>fontbox</artifactId>
-            <version>${pdfbox.version}</version>
-        </dependency>
-        <!--    4xmlsec    -->
-        <!-- https://mvnrepository.com/artifact/org.apache.santuario/xmlsec -->
-        <dependency>
-            <groupId>org.apache.santuario</groupId>
-            <artifactId>xmlsec</artifactId>
-            <version>${xmlsec.version}</version>
-        </dependency>
-        <!--    4xmlgraphics-commons    -->
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>xmlgraphics-commons</artifactId>
-            <version>${xmlgraphics.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-io</artifactId>
-                    <groupId>commons-io</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!--    4batik  Batik is a Java-based toolkit for applications or applets that want to use images in the Scalable Vector Graphics (SVG) format for various purposes, such as display, generation or manipulation.  -->
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-all</artifactId>
-            <version>${batik.version}</version>
-        </dependency>
-    </dependencies>
     <dependencyManagement>
         <dependencies>
             <!--spring cloud-->
@@ -312,6 +117,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <!--spring boot-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -320,6 +126,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <!--spring cloud alibaba-->
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
@@ -328,6 +135,165 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!-- Redisson -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+            <!--    Redisson与Spring Data Redis整合，上面的starter引入的是25的版本    -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-data-26</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <!--监控sql日志-->
+            <dependency>
+                <groupId>org.bgee.log4jdbc-log4j2</groupId>
+                <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
+                <version>${log4jdbc.version}</version>
+            </dependency>
+
+            <!-- Swagger UI 相关 -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc.openapi.version}</version>
+            </dependency>
+            <!--    his dependency helps ignoring @AuthenticationPrincipal in case its used on REST Controllers    -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-security</artifactId>
+                <version>${springdoc.openapi.version}</version>
+            </dependency>
+            <!--    enable the support of spring Pageable Type    -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-data-rest</artifactId>
+                <version>${springdoc.openapi.version}</version>
+            </dependency>
+            <!--   enable javadoc support     -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-javadoc</artifactId>
+                <version>${springdoc.openapi.version}</version>
+            </dependency>
+            <!--    swagger-core依赖该包，部分原因，需单独升级依赖版本    -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- druid数据源驱动 ; 注：使用shardingsphere时。这里不能用druid但spring-boot-starter -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+                <!--      不兼容Jdk 11 及以上版本，移除依赖 https://github.com/alibaba/druid/issues/3060      -->
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jconsole</artifactId>
+                        <groupId>com.sun</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>tools</artifactId>
+                        <groupId>com.sun</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!--工具包-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+            <!-- ip2region IP库 -->
+            <dependency>
+                <groupId>net.dreamlu</groupId>
+                <artifactId>mica-ip2region</artifactId>
+                <version>${ip2region.version}</version>
+            </dependency>
+
+            <!-- excel工具 -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>${xerces.version}</version>
+            </dependency>
+
+            <!--mapStruct依赖-->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <!--   具体可以看看这个，https://jcp.org/en/jsr/detail?id=330     -->
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
+            </dependency>
+
+            <!-- Java图形验证码。该项目在gitee上有 -->
+            <dependency>
+                <groupId>com.github.whvcse</groupId>
+                <artifactId>easy-captcha</artifactId>
+                <version>1.6.2</version>
+            </dependency>
+
+            <!-- 解析客户端操作系统、浏览器信息 -->
+            <dependency>
+                <groupId>nl.basjes.parse.useragent</groupId>
+                <artifactId>yauaa</artifactId>
+                <version>${yauaa.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>commons-collections4</artifactId>
+                        <groupId>org.apache.commons</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- logstash -->
+            <dependency>
+                <groupId>net.logstash.logback</groupId>
+                <artifactId>logstash-logback-encoder</artifactId>
+                <version>${logstash.version}</version>
+                <!-- Use runtime scope if the project does not have any compile-time usage of logstash-logback-encoder,
+                    such as usage of StructuredArguments/Markers or implementations such as
+                    JsonProvider, AppenderListener, JsonFactoryDecorator, JsonGeneratorDecorator, etc
+                <scope>runtime</scope>
+                -->
+            </dependency>
+
+            <!--图片处理。主要为调整图片的尺寸-->
+            <dependency>
+                <groupId>net.coobird</groupId>
+                <artifactId>thumbnailator</artifactId>
+                <version>${thumbnailator.version}</version>
+            </dependency>
+
             <!--
                 If you are using logstash-logback-encoder in a project (such as spring-boot) that also declares dependencies on any of the above libraries,
             you might need to tell maven explicitly which versions to use to avoid conflicts. You can do so using maven's dependencyManagement feature.
