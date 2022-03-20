@@ -29,87 +29,35 @@
     <name>工具模块</name>
 
     <properties>
-        <mail.version>1.6.2</mail.version>
-        <qiniu.version>7.8.0</qiniu.version>
-        <alipay.version>4.18.0.ALL</alipay.version>
-        <aliyun.oss.version>3.13.2</aliyun.oss.version>
-        <aliyun.dysmsapi.version>2.0.8</aliyun.dysmsapi.version>
-        <bcprov.jdk15on.version>1.70</bcprov.jdk15on.version>
     </properties>
 
-    <!--  无人维护。其中依赖版本过老，考虑其他方式  -->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.alibaba.cloud</groupId>
-                <artifactId>aliyun-spring-boot-dependencies</artifactId>
-                <version>1.0.0</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
-        <!-- 同时需要common模块和logging模块只需要引入logging模块即可 -->
-        <dependency>
-            <groupId>com.lwohvye</groupId>
-            <artifactId>why-logging</artifactId>
-            <version>${project.core.version}</version>
-        </dependency>
-
-        <!--邮件依赖-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>javax.mail-api</artifactId>
-            <version>${mail.version}</version>
-        </dependency>
-
-        <!--    对象存储计划改为阿里云OSS  -->
+        <!--  服务注册与发现、配置中心nacos  -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
-            <artifactId>aliyun-oss-spring-boot-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>aliyun-sdk-oss</artifactId>
-                    <groupId>com.aliyun.oss</groupId>
-                </exclusion>
-            </exclusions>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.aliyun.oss</groupId>
-            <artifactId>aliyun-sdk-oss</artifactId>
-            <version>${aliyun.oss.version}</version>
-        </dependency>
-
-        <!--   阿里短信通道SMS     -->
-        <!-- https://mvnrepository.com/artifact/com.aliyun/dysmsapi20170525 -->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>dysmsapi20170525</artifactId>
-            <version>${aliyun.dysmsapi.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcpkix-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on -->
-        <!--    用于创建CSR(证书请求)、🔐请求    -->
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>${bcprov.jdk15on.version}</version>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- tools模块 -->
+        <dependency>
+            <groupId>com.lwohvye</groupId>
+            <artifactId>eladmin-tools</artifactId>
+            <version>${el.core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
     </dependencies>
 </project>
