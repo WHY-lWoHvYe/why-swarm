@@ -65,6 +65,8 @@ public class JwtAuthenticationTokenFilter extends GenericFilterBean {
                         // 剩余时常不足时，进行通知（只通知一次）
                         tokenProvider.noticeExpire5Token(token);
                         SecurityContextHolder.getContext().setAuthentication(authentication);
+                        // 理论上应该所有请求都会进来，在这里设置属性就行，如果猜测不正确的话，参考这个做一下：https://github.com/lWoHvYe/mall-swarm/blob/main/mall-gateway/src/main/java/com/macro/mall/filter/AuthGlobalFilter.java
+                        servletRequest.setAttribute("gwuname", userDetails.getUsername());
                     }
                 }
             } catch (ExpiredJwtException e) {

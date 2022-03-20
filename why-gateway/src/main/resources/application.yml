@@ -1,0 +1,28 @@
+server:
+  port: 8201
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true #????service-id
+      routes: #??????
+        - id: why-system
+          uri: lb://why-system
+          predicates:
+            - Path=/why-system/**
+          filters:
+            - StripPrefix=1
+        - id: why-tools
+          uri: lb://why-tools
+          predicates:
+            - Path=/why-tools/**
+          filters:
+            - StripPrefix=1
+        - id: why-logging
+          uri: lb://why-logging
+          predicates:
+            - Path=/why-logging/**
+          filters:
+            - StripPrefix=1
