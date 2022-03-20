@@ -53,11 +53,11 @@
     </scm>
 
     <modules>
-<!--        <module>why-logging</module>-->
-<!--        <module>why-system</module>-->
+        <module>why-logging</module>
+        <!--        <module>why-system</module>-->
         <module>why-sys-adaptor</module>
-<!--        <module>why-tools</module>-->
-<!--        <module>why-generator</module>-->
+        <!--        <module>why-tools</module>-->
+        <!--        <module>why-generator</module>-->
         <module>why-gateway</module>
     </modules>
 

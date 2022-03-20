@@ -48,6 +48,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!--    sys模块适配器    -->
         <dependency>
             <groupId>com.lwohvye</groupId>
             <artifactId>why-sys-adaptor</artifactId>

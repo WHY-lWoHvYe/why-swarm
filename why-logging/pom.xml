@@ -29,10 +29,21 @@
     <name>日志模块</name>
 
     <dependencies>
+
+        <!--  服务注册与发现、配置中心nacos  -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.lwohvye</groupId>
-            <artifactId>why-common</artifactId>
-            <version>${project.core.version}</version>
+            <artifactId>eladmin-logging</artifactId>
+            <version>${el.core.version}</version>
         </dependency>
     </dependencies>
 </project>

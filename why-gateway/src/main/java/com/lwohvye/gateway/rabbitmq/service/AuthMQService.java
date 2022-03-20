@@ -17,6 +17,7 @@ package com.lwohvye.gateway.rabbitmq.service;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.lwohvye.config.LocalCoreConfig;
 import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
 import com.lwohvye.gateway.security.service.UserLocalCache;
 import com.lwohvye.modules.system.domain.vo.UserBaseVo;
@@ -48,7 +49,7 @@ public class AuthMQService {
 
     public void saveAuthorizeLog(String record) {
         var logMap = Map.of("description", "记录用户登录信息", "logType", "Auth", "params", record);
-        var logMsg = new AmqpMsgEntity().setMsgType("authLog").setMsgData(JsonUtils.toJSONString(logMap));
+        var logMsg = new AmqpMsgEntity().setMsgType("authLog").setMsgData(JsonUtils.toJSONString(logMap)).setOrigin(LocalCoreConfig.ORIGIN);
         // TODO: 2022/3/20 消费侧
         rabbitMQProducerService.sendMsg(RabbitMqGatewayConfig.TOPIC_SYNC_EXCHANGE, RabbitMqGatewayConfig.LOG_ROUTER_KEY, logMsg);
     }
