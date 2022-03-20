@@ -5,3 +5,6 @@
 - why-sys-adaptor 系统模块适配器 50%
 - why-logging 日志模块 80%
 - why-tools 工具模块 20% 
+- sentinel 未开始
+- nacos 未开始
+- 联调 未开始

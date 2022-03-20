@@ -26,8 +26,8 @@
     <version>2.2022.0</version>
 
     <name>why-swarm</name>
-    <url>https://github.com/lWoHvYe/eladmin</url>
-    <description>A Spring Boot Project With Jpa JWT Security and so on</description>
+    <url>https://github.com/lWoHvYe/why-swarm</url>
+    <description>A Swarm based on eladmin</description>
 
     <licenses>
         <license>
@@ -46,10 +46,10 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/lWoHvYe/eladmin.git</connection>
-        <developerConnection>scm:git:ssh://github.com/lWoHvYe/eladmin.git</developerConnection>
-        <url>https://github.com/lWoHvYe/eladmin/tree/main</url>
-        <tag>eladmin-v2.2022.0</tag>
+        <connection>scm:git:git://github.com/lWoHvYe/why-swarm.git</connection>
+        <developerConnection>scm:git:ssh://github.com/lWoHvYe/why-swarm.git</developerConnection>
+        <url>https://github.com/lWoHvYe/why-swarm/tree/main</url>
+        <tag>why-swarm-v2.2022.0</tag>
     </scm>
 
     <modules>
@@ -60,15 +60,6 @@
         <!--        <module>why-generator</module>-->
         <module>why-gateway</module>
     </modules>
-
-    <!--    <parent>-->
-    <!--        <groupId>org.springframework.boot</groupId>-->
-    <!--        <artifactId>spring-boot-starter-parent</artifactId>-->
-    <!--        <version>2.6.2</version>-->
-    <!--        &lt;!&ndash;<relativePath/>设定一个空值将始终从仓库中获取，不从本地路径获取。-->
-    <!--        查找顺序：relativePath元素中的地址–本地仓库–远程仓库&ndash;&gt;-->
-    <!--        <relativePath/> &lt;!&ndash; lookup parent from repository &ndash;&gt;-->
-    <!--    </parent>-->
 
     <properties>
         <!--    Spring Boot依赖版本配置：https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#dependency-versions.properties    -->

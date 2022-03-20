@@ -201,8 +201,9 @@ public class TokenProvider implements InitializingBean {
             if (Boolean.TRUE.equals(putResult)) {
                 try {
                     // 提醒
-                    WebSocketServer.sendInfo(new SocketMsg("您的余额已不足，请及时充值", MsgType.INFO), "sysMember");
-                } catch (IOException e) {
+                    // TODO: 2022/3/20 换个别的方式
+                    // WebSocketServer.sendInfo(new SocketMsg("您的余额已不足，请及时充值", MsgType.INFO), "sysMember");
+                } catch (Exception e) {
                     log.error("系统通知失败：{} ", e.getMessage());
                 }
             }
