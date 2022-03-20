@@ -54,7 +54,7 @@
 
     <modules>
         <module>why-logging</module>
-        <!--        <module>why-system</module>-->
+        <module>why-system</module>
         <module>why-sys-adaptor</module>
         <!--        <module>why-tools</module>-->
         <!--        <module>why-generator</module>-->
@@ -203,6 +203,11 @@
                         <groupId>com.sun</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
             </dependency>
 
             <!--工具包-->
