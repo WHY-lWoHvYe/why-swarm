@@ -64,6 +64,11 @@
             <artifactId>why-sys-adaptor</artifactId>
             <version>${project.core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.lwohvye</groupId>
+            <artifactId>why-tools-adaptor</artifactId>
+            <version>${project.core.version}</version>
+        </dependency>
 
         <!-- jwt -->
         <dependency>

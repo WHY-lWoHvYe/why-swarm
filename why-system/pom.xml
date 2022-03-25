@@ -67,6 +67,11 @@
             <artifactId>eladmin-api</artifactId>
             <version>${el.core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.lwohvye</groupId>
+            <artifactId>why-tools-adaptor</artifactId>
+            <version>${project.core.version}</version>
+        </dependency>
 
         <!--分库分表中间件-->
         <dependency>
