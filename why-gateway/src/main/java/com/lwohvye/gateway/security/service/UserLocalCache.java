@@ -23,7 +23,7 @@ import com.lwohvye.config.LocalCoreConfig;
 import com.lwohvye.exception.EntityNotFoundException;
 import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
 import com.lwohvye.gateway.rabbitmq.service.RabbitMQProducerService;
-import com.lwohvye.gateway.security.handler.AuthHandlerContext;
+import com.lwohvye.gateway.security.strategy.AuthHandlerContext;
 import com.lwohvye.gateway.security.service.dto.JwtUserDto;
 import com.lwohvye.modules.system.service.dto.UserInnerDto;
 import com.lwohvye.sysadaptor.service.ISysDeptFeignClientService;

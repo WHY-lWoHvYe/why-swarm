@@ -15,9 +15,7 @@
  */
 package com.lwohvye.gateway.rabbitmq.service;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
-import com.lwohvye.utils.json.JsonUtils;
 import com.lwohvye.utils.rabbitmq.AmqpMsgEntity;
 import com.lwohvye.utils.rabbitmq.SimpleMQProducerService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +35,7 @@ public class RabbitMQProducerService extends SimpleMQProducerService {
      * @date 2021/4/27 2:49 下午
      */
     public void sendMsg(AmqpMsgEntity amqpMsgEntity) {
-        amqpTemplate.convertAndSend(RabbitMqGatewayConfig.DIRECT_SYNC_EXCHANGE, RabbitMqGatewayConfig.DATA_SYNC_ROUTE_KEY, JsonUtils.toJSONString(amqpMsgEntity));
-
+        sendMsg(RabbitMqGatewayConfig.DIRECT_SYNC_EXCHANGE, RabbitMqGatewayConfig.DATA_SYNC_ROUTE_KEY, amqpMsgEntity);
     }
 
     /**
@@ -48,18 +45,7 @@ public class RabbitMQProducerService extends SimpleMQProducerService {
      * @date 2021/7/26 1:17 下午
      */
     public void sendDelayMsg(AmqpMsgEntity commonEntity) {
-        amqpTemplate.convertAndSend(RabbitMqGatewayConfig.DIRECT_SYNC_DELAY_EXCHANGE,
-                RabbitMqGatewayConfig.DATA_COMMON_DELAY_ROUTE_KEY, JsonUtils.toJSONString(commonEntity),
-                message -> {
-                    var expire = commonEntity.getExpire();
-                    var timeUnit = commonEntity.getTimeUnit();
-                    if (ObjectUtil.isNotEmpty(expire) && ObjectUtil.isNotEmpty(timeUnit)) {
-                        Long expireMill = TimeUnit.MILLISECONDS.convert(expire, timeUnit);
-                        //通过给消息设置x-delay头来设置消息从交换机发送到队列的延迟时间；
-                        message.getMessageProperties().setHeader("x-delay", expireMill);
-                    }
-                    return message;
-                });
+        sendDelayMsg(RabbitMqGatewayConfig.DIRECT_SYNC_DELAY_EXCHANGE, RabbitMqGatewayConfig.DATA_COMMON_DELAY_ROUTE_KEY, commonEntity);
     }
 
     /**
@@ -70,12 +56,8 @@ public class RabbitMQProducerService extends SimpleMQProducerService {
      * @date 2021/9/30 1:38 下午
      */
     public void sendSyncDelayMsg(String routeKey, AmqpMsgEntity commonEntity) {
-        amqpTemplate.convertAndSend(RabbitMqGatewayConfig.TOPIC_SYNC_DELAY_EXCHANGE, routeKey,
-                JsonUtils.toJSONString(commonEntity),
-                message -> {
-                    // 延迟 500ms
-                    message.getMessageProperties().setHeader("x-delay", 500L);
-                    return message;
-                });
+        // 延时500ms
+        commonEntity.setExpire(500L).setTimeUnit(TimeUnit.MILLISECONDS);
+        sendDelayMsg(RabbitMqGatewayConfig.TOPIC_SYNC_DELAY_EXCHANGE, routeKey, commonEntity);
     }
 }

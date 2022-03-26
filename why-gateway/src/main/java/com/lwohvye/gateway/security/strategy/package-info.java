@@ -23,7 +23,7 @@
 //@NonNullFields，包（Package）级别注解，用于变量不能为null；
 @NonNullApi
 @NonNullFields
-package com.lwohvye.gateway.security.handler;
+package com.lwohvye.gateway.security.strategy;
 
 import org.springframework.lang.NonNullApi;
 import org.springframework.lang.NonNullFields;

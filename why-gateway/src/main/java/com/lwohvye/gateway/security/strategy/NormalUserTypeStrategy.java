@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.lwohvye.gateway.security.handler;
+package com.lwohvye.gateway.security.strategy;
 
 import com.lwohvye.gateway.security.annotation.UserTypeHandlerAnno;
 import com.lwohvye.gateway.security.enums.UserTypeEnum;
@@ -22,11 +22,13 @@ import com.lwohvye.sysadaptor.service.ISysRoleFeignClientService;
 import com.lwohvye.utils.SpringContextHolder;
 import com.lwohvye.utils.result.ResultUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -40,17 +42,18 @@ import java.util.stream.Collectors;
 @UserTypeHandlerAnno(UserTypeEnum.NORMAL)
 public final class NormalUserTypeStrategy implements AUserTypeStrategy {
 
+    @Autowired
     private ISysRoleFeignClientService roleFeignClientService;
 
     /**
      * 属性注入。这里不使用@PostConstruct后置处理，是因为之前有验证在执行后置处理的时候，SpringContextHolder还无法获取到相关的bean（因为applicationContext还未注入）
-     * 另，当下@PostConstruct并未被执行，这个跟使用@Autowire未注入roleRepository这两个问题，后续研究一下
      *
      * @date 2022/3/13 6:03 PM
      */
     @Override
     public void doInit() {
-        this.roleFeignClientService = SpringContextHolder.getBean(ISysRoleFeignClientService.class);
+        if (Objects.isNull(roleFeignClientService))
+            this.roleFeignClientService = SpringContextHolder.getBean(ISysRoleFeignClientService.class);
     }
 
     @Override

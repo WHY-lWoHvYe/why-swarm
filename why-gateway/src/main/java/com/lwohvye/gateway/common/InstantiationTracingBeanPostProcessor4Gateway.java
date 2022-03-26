@@ -16,7 +16,7 @@
 package com.lwohvye.gateway.common;
 
 import cn.hutool.core.util.ReflectUtil;
-import com.lwohvye.gateway.security.handler.NormalUserTypeStrategy;
+import com.lwohvye.gateway.security.strategy.NormalUserTypeStrategy;
 import com.lwohvye.utils.SpringContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
