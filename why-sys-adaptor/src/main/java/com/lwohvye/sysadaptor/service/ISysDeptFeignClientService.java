@@ -1,8 +1,8 @@
 package com.lwohvye.sysadaptor.service;
 
 import com.lwohvye.annotation.log.Log;
-import com.lwohvye.modules.system.api.SysDeptAPI;
-import com.lwohvye.modules.system.domain.Dept;
+import com.lwohvye.api.modules.system.api.SysDeptAPI;
+import com.lwohvye.api.modules.system.domain.Dept;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 

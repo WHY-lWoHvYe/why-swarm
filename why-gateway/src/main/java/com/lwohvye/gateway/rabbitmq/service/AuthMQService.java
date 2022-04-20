@@ -17,10 +17,10 @@ package com.lwohvye.gateway.rabbitmq.service;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.lwohvye.api.modules.system.domain.vo.UserBaseVo;
 import com.lwohvye.config.LocalCoreConfig;
 import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
 import com.lwohvye.gateway.security.service.UserLocalCache;
-import com.lwohvye.modules.system.domain.vo.UserBaseVo;
 import com.lwohvye.sysadaptor.service.ISysUserFeignClientService;
 import com.lwohvye.utils.json.JsonUtils;
 import com.lwohvye.utils.rabbitmq.AmqpMsgEntity;

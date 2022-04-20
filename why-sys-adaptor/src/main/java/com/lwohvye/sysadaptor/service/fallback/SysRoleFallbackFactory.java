@@ -1,7 +1,7 @@
 package com.lwohvye.sysadaptor.service.fallback;
 
-import com.lwohvye.modules.system.domain.Role;
-import com.lwohvye.modules.system.service.dto.RoleQueryCriteria;
+import com.lwohvye.api.modules.system.domain.Role;
+import com.lwohvye.api.modules.system.service.dto.RoleQueryCriteria;
 import com.lwohvye.sysadaptor.service.ISysRoleFeignClientService;
 import com.lwohvye.utils.result.ResultInfo;
 import org.springframework.cloud.openfeign.FallbackFactory;

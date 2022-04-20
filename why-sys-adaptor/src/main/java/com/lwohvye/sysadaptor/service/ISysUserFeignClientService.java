@@ -1,9 +1,9 @@
 package com.lwohvye.sysadaptor.service;
 
 import com.lwohvye.annotation.log.Log;
-import com.lwohvye.modules.system.api.SysUserAPI;
-import com.lwohvye.modules.system.domain.User;
-import com.lwohvye.modules.system.domain.vo.UserPassVo;
+import com.lwohvye.api.modules.system.api.SysUserAPI;
+import com.lwohvye.api.modules.system.domain.User;
+import com.lwohvye.api.modules.system.domain.vo.UserPassVo;
 import com.lwohvye.sysadaptor.service.fallback.SysUserFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;

@@ -15,9 +15,9 @@
  */
 package com.lwohvye.gateway.security.security.filter;
 
+import com.lwohvye.api.modules.system.service.dto.ResourceDto;
 import com.lwohvye.constant.SecurityConstant;
 import com.lwohvye.gateway.security.config.SpringSecurityConfig;
-import com.lwohvye.modules.system.service.dto.ResourceDto;
 import com.lwohvye.sysadaptor.service.ISysResourceFeignClientService;
 import com.lwohvye.utils.result.ResultUtil;
 import lombok.RequiredArgsConstructor;

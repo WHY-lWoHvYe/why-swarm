@@ -15,9 +15,9 @@
  */
 package com.lwohvye.gateway.security.strategy;
 
+import com.lwohvye.api.modules.system.service.dto.RoleSmallDto;
 import com.lwohvye.gateway.security.annotation.UserTypeHandlerAnno;
 import com.lwohvye.gateway.security.enums.UserTypeEnum;
-import com.lwohvye.modules.system.service.dto.RoleSmallDto;
 import com.lwohvye.sysadaptor.service.ISysRoleFeignClientService;
 import com.lwohvye.utils.SpringContextHolder;
 import com.lwohvye.utils.result.ResultUtil;

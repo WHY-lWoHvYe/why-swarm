@@ -1,7 +1,7 @@
 package com.lwohvye.sysadaptor.service.fallback;
 
-import com.lwohvye.modules.system.domain.Resource;
-import com.lwohvye.modules.system.service.dto.ResourceQueryCriteria;
+import com.lwohvye.api.modules.system.domain.Resource;
+import com.lwohvye.api.modules.system.service.dto.ResourceQueryCriteria;
 import com.lwohvye.sysadaptor.service.ISysResourceFeignClientService;
 import com.lwohvye.utils.result.ResultInfo;
 import org.springframework.cloud.openfeign.FallbackFactory;

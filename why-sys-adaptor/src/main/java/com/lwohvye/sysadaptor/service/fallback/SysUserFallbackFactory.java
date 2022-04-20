@@ -1,9 +1,9 @@
 package com.lwohvye.sysadaptor.service.fallback;
 
-import com.lwohvye.modules.system.domain.User;
-import com.lwohvye.modules.system.domain.vo.UserBaseVo;
-import com.lwohvye.modules.system.domain.vo.UserPassVo;
-import com.lwohvye.modules.system.service.dto.UserQueryCriteria;
+import com.lwohvye.api.modules.system.domain.User;
+import com.lwohvye.api.modules.system.domain.vo.UserBaseVo;
+import com.lwohvye.api.modules.system.domain.vo.UserPassVo;
+import com.lwohvye.api.modules.system.service.dto.UserQueryCriteria;
 import com.lwohvye.sysadaptor.service.ISysUserFeignClientService;
 import com.lwohvye.utils.result.ResultInfo;
 import org.springframework.cloud.openfeign.FallbackFactory;
