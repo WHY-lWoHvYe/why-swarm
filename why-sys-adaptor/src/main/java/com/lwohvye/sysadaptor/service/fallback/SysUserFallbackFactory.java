@@ -56,6 +56,16 @@ public class SysUserFallbackFactory implements FallbackFactory<ISysUserFeignClie
             }
 
             @Override
+            public ResponseEntity<Object> createWithHeader(User resources) {
+                return new ResponseEntity<>(ResultInfo.failed("添加失败，系统繁忙"), HttpStatus.CREATED);
+            }
+
+            @Override
+            public ResponseEntity<Object> createWithHeader(User resources, String token) {
+                return new ResponseEntity<>(ResultInfo.failed("添加失败，系统繁忙"), HttpStatus.CREATED);
+            }
+
+            @Override
             public ResponseEntity<Object> updateAvatar(MultipartFile avatar) {
                 return new ResponseEntity<>(ResultInfo.failed("提交失败，请稍后重试"), HttpStatus.OK);
             }
