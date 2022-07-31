@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class RabbitMqGatewayConfig {
+public class RabbitMQGatewayConfig {
 
     // region 交换机
     // direct交换机

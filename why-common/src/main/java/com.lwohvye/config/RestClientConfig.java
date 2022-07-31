@@ -14,9 +14,9 @@
  *    limitations under the License.
  */
 
-package com.lwohvye.sysadaptor.config;
+package com.lwohvye.config;
 
-import com.lwohvye.sysadaptor.handler.SimRestErrorHandler;
+import com.lwohvye.handler.SimRestErrorHandler;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClients;
@@ -67,7 +67,7 @@ public class RestClientConfig {
         var interceptors = restTemplate.getInterceptors();
         if (CollectionUtils.isEmpty(interceptors))
             interceptors = new ArrayList<>();
-        interceptors.add(new RestTemplateSimInterceptor());
+        interceptors.add(new com.lwohvye.sysadaptor.config.RestTemplateSimInterceptor());
         restTemplate.setInterceptors(interceptors);
 
         return restTemplate;

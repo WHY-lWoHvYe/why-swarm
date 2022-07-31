@@ -15,7 +15,7 @@
  */
 package com.lwohvye.gateway.rabbitmq.service;
 
-import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
+import com.lwohvye.gateway.rabbitmq.config.RabbitMQGatewayConfig;
 import com.lwohvye.utils.rabbitmq.AmqpMsgEntity;
 import com.lwohvye.utils.rabbitmq.SimpleMQProducerService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class RabbitMQProducerService extends SimpleMQProducerService {
      * @date 2021/4/27 2:49 下午
      */
     public void sendMsg(AmqpMsgEntity amqpMsgEntity) {
-        sendMsg(RabbitMqGatewayConfig.DIRECT_SYNC_EXCHANGE, RabbitMqGatewayConfig.DATA_SYNC_ROUTE_KEY, amqpMsgEntity);
+        sendMsg(RabbitMQGatewayConfig.DIRECT_SYNC_EXCHANGE, RabbitMQGatewayConfig.DATA_SYNC_ROUTE_KEY, amqpMsgEntity);
     }
 
     /**
@@ -45,7 +45,7 @@ public class RabbitMQProducerService extends SimpleMQProducerService {
      * @date 2021/7/26 1:17 下午
      */
     public void sendDelayMsg(AmqpMsgEntity commonEntity) {
-        sendDelayMsg(RabbitMqGatewayConfig.DIRECT_SYNC_DELAY_EXCHANGE, RabbitMqGatewayConfig.DATA_COMMON_DELAY_ROUTE_KEY, commonEntity);
+        sendDelayMsg(RabbitMQGatewayConfig.DIRECT_SYNC_DELAY_EXCHANGE, RabbitMQGatewayConfig.DATA_COMMON_DELAY_ROUTE_KEY, commonEntity);
     }
 
     /**
@@ -58,12 +58,12 @@ public class RabbitMQProducerService extends SimpleMQProducerService {
     public void sendSyncDelayMsg(String routeKey, AmqpMsgEntity commonEntity) {
         // 延时500ms
         commonEntity.setExpire(500L).setTimeUnit(TimeUnit.MILLISECONDS);
-        sendDelayMsg(RabbitMqGatewayConfig.TOPIC_SYNC_DELAY_EXCHANGE, routeKey, commonEntity);
+        sendDelayMsg(RabbitMQGatewayConfig.TOPIC_SYNC_DELAY_EXCHANGE, routeKey, commonEntity);
     }
 
     public void sendSyncDelayMsgEntity(String routeKey, AmqpMsgEntity commonEntity) {
         // 延时500ms
         commonEntity.setExpire(500L).setTimeUnit(TimeUnit.MILLISECONDS);
-        sendDelayMsgEntity(RabbitMqGatewayConfig.TOPIC_SYNC_DELAY_EXCHANGE, routeKey, commonEntity);
+        sendDelayMsgEntity(RabbitMQGatewayConfig.TOPIC_SYNC_DELAY_EXCHANGE, routeKey, commonEntity);
     }
 }

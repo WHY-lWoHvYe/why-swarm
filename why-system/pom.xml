@@ -64,9 +64,10 @@
         <!--  系统API -->
         <dependency>
             <groupId>com.lwohvye</groupId>
-            <artifactId>eladmin-api</artifactId>
+            <artifactId>eladmin-system</artifactId>
             <version>${el.core.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.lwohvye</groupId>
             <artifactId>why-tools-adaptor</artifactId>
@@ -91,4 +92,13 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+            </plugin>
+        </plugins>
+    </build>
 </project>

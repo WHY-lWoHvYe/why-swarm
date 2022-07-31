@@ -22,7 +22,7 @@ import com.google.common.cache.LoadingCache;
 import com.lwohvye.api.modules.system.service.dto.UserInnerDto;
 import com.lwohvye.config.LocalCoreConfig;
 import com.lwohvye.exception.EntityNotFoundException;
-import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
+import com.lwohvye.gateway.rabbitmq.config.RabbitMQGatewayConfig;
 import com.lwohvye.gateway.rabbitmq.service.RabbitMQProducerService;
 import com.lwohvye.gateway.security.strategy.AuthHandlerContext;
 import com.lwohvye.gateway.security.service.dto.JwtUserDto;
@@ -120,7 +120,7 @@ public class UserLocalCache {
         if (StringUtils.isNotEmpty(userName)) {
             if (Boolean.TRUE.equals(doSync)) { // 广播事件
                 var amqpMsg = new AmqpMsgEntity().setMsgType("sp").setMsgData(userName).setExtraData("cleanUserCache").setOrigin(LocalCoreConfig.ORIGIN);
-                rabbitMQProducerService.sendSyncDelayMsgEntity(RabbitMqGatewayConfig.SP_SYNC_ROUTE_KEY, amqpMsg);
+                rabbitMQProducerService.sendSyncDelayMsgEntity(RabbitMQGatewayConfig.SP_SYNC_ROUTE_KEY, amqpMsg);
             }
             userLRUCache.invalidate(userName); // 清除单个key
         }

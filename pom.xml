@@ -53,6 +53,7 @@
     </scm>
 
     <modules>
+        <module>why-common</module>
         <module>why-gateway</module>
         <module>why-logging</module>
         <module>why-system</module>
@@ -67,10 +68,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.core.version>2.2022.0</project.core.version>
         <el.core.version>3.0.3</el.core.version>
-        <spring-boot.version>2.4.13</spring-boot.version>
-        <spring-cloud.version>2020.0.4</spring-cloud.version>
+        <spring-boot.version>2.6.6</spring-boot.version>
+        <spring-cloud.version>2021.0.2</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
         <log4jdbc.version>1.16</log4jdbc.version>
         <springdoc.openapi.version>1.6.2</springdoc.openapi.version>
@@ -81,7 +83,8 @@
         <lombok.version>1.18.22</lombok.version>
         <commons-pool2.version>2.11.1</commons-pool2.version>
         <!--mapstruct也要用新版本才行-->
-        <mapstruct.version>1.4.2.Final</mapstruct.version>
+        <mapstruct.version>1.5.2.Final</mapstruct.version>
+        <mapstruct.spring.version>0.1.2</mapstruct.spring.version>
         <!--    指定版本，新版本Spring Boot发布后可移除    -->
         <!--        <log4j2.version>2.17.0</log4j2.version>-->
         <!--logstash有所依赖，需要使用management统一管理依赖-->
@@ -245,6 +248,11 @@
                 <version>${mapstruct.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.mapstruct.extensions.spring</groupId>
+                <artifactId>mapstruct-spring-extensions</artifactId>
+                <version>${mapstruct.spring.version}</version>
+            </dependency>
             <!--   具体可以看看这个，https://jcp.org/en/jsr/detail?id=330     -->
             <dependency>
                 <groupId>javax.inject</groupId>
@@ -315,11 +323,13 @@
     </dependencyManagement>
 
     <build>
+
         <plugins>
             <!-- 打包时跳过测试 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
@@ -331,6 +341,7 @@
                 <!-- maven-compiler-plugin应该是默认使用的。所以可以不显示的配置。 -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
                 <configuration>
                     <source>17</source>
                     <target>17</target>
@@ -343,6 +354,7 @@
                     <!--for lombok annotations to resolve-->
                     <!--contradictory to maven, intelliJ fails with this-->
                     <annotationProcessorPaths>
+                        <!-- lombok和mapstruct都是编译时的增强，当需要设置执行顺序时，可采用下面的配置，从上到下，上面的先执行 -->
                         <!--4lombok-->
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -362,28 +374,17 @@
                         <path>
                             <groupId>com.github.therapi</groupId>
                             <artifactId>therapi-runtime-javadoc-scribe</artifactId>
-                            <version>0.12.0</version>
+                            <version>0.13.0</version>
                         </path>
                     </annotationProcessorPaths>
                     <!--https://docs.spring.io/spring-boot/docs/2.4.4/reference/html/appendix-configuration-metadata.html#configuration-metadata-annotation-processor-->
                     <!--<proc>none</proc>-->
                 </configuration>
             </plugin>
-            <!--自动发布插件-->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -396,10 +397,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <!--For maven package error:  javadoc command: The environment variable JAVA_HOME is not correctly set.-->
-                <configuration>
-                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-                </configuration>
+                <version>3.4.0</version>
+                <!--For maven package error（on Mac）:  javadoc command: The environment variable JAVA_HOME is not correctly set.改为自行在Maven Runner中自行配置JAVA_HOME变量-->
+                <!--<configuration>-->
+                <!--    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>-->
+                <!--</configuration>-->
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -414,23 +416,9 @@
                 </executions>
             </plugin>
             <plugin>
-                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-gpg-plugin -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
@@ -438,17 +426,9 @@
                     <goals>deploy</goals>
                 </configuration>
             </plugin>
-            <!--     https://felix.apache.org/documentation/subprojects/apache-felix-maven-bundle-plugin-bnd.html
-                     https://www.lwohvye.com/2021/12/10/osgi-%e7%90%86%e8%a7%a3/
-                     暂无打bundle-package的打算。留档
-               -->
-            <!--<plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-            </plugin>-->
         </plugins>
     </build>
+
 
     <distributionManagement>
         <!--        <repository>-->

@@ -16,7 +16,7 @@
 package com.lwohvye.gateway.rabbitmq.consumer;
 
 import cn.hutool.core.util.ReflectUtil;
-import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
+import com.lwohvye.gateway.rabbitmq.config.RabbitMQGatewayConfig;
 import com.lwohvye.gateway.rabbitmq.service.AuthMQService;
 import com.lwohvye.utils.MailAdapter;
 import com.lwohvye.utils.rabbitmq.AmqpMsgEntity;
@@ -34,7 +34,7 @@ import java.util.Map;
 @Component
 @Slf4j
 // 监听延迟插件相关队列的消息
-@RabbitListener(queues = RabbitMqGatewayConfig.DATA_COMMON_DELAY_QUEUE)
+@RabbitListener(queues = RabbitMQGatewayConfig.DATA_COMMON_DELAY_QUEUE)
 // 支持多种配置方式 property placeholders and SpEL  https://docs.spring.io/spring-amqp/docs/current/reference/html/#choose-container
 //@RabbitListener(queues = "#{'${property.with.comma.delimited.queue.names}'.split(',')}" )
 // 还可调用静态和非静态方法

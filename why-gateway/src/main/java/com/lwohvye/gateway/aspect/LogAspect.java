@@ -17,7 +17,7 @@ package com.lwohvye.gateway.aspect;
 
 
 import com.lwohvye.config.LocalCoreConfig;
-import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
+import com.lwohvye.gateway.rabbitmq.config.RabbitMQGatewayConfig;
 import com.lwohvye.gateway.rabbitmq.service.RabbitMQProducerService;
 import com.lwohvye.utils.RequestHolder;
 import com.lwohvye.utils.SecurityUtils;
@@ -76,7 +76,7 @@ public class LogAspect {
         var logMap = Map.of("logType", "INFO", "time", time,
                 "username", getUsername(), "browser", StringUtils.getBrowser(request), "ip", StringUtils.getIp(request), "joinPoint", joinPoint);
         var logMsg = new AmqpMsgEntity().setMsgType("APILog").setMsgData(JsonUtils.toJSONString(logMap)).setOrigin(LocalCoreConfig.ORIGIN);
-        rabbitMQProducerService.sendMsg(RabbitMqGatewayConfig.TOPIC_SYNC_EXCHANGE, RabbitMqGatewayConfig.LOG_ROUTER_KEY, logMsg);
+        rabbitMQProducerService.sendMsg(RabbitMQGatewayConfig.TOPIC_SYNC_EXCHANGE, RabbitMQGatewayConfig.LOG_ROUTER_KEY, logMsg);
         return result;
     }
 
@@ -94,7 +94,7 @@ public class LogAspect {
         var logMap = Map.of("logType", "ERROR", "time", time, "exceptionDetail", ThrowableUtil.getStackTrace(e).getBytes(),
                 "username", getUsername(), "browser", StringUtils.getBrowser(request), "ip", StringUtils.getIp(request), "joinPoint", joinPoint);
         var logMsg = new AmqpMsgEntity().setMsgType("APILog").setMsgData(JsonUtils.toJSONString(logMap)).setOrigin(LocalCoreConfig.ORIGIN);
-        rabbitMQProducerService.sendMsg(RabbitMqGatewayConfig.TOPIC_SYNC_EXCHANGE, RabbitMqGatewayConfig.LOG_ROUTER_KEY, logMsg);
+        rabbitMQProducerService.sendMsg(RabbitMQGatewayConfig.TOPIC_SYNC_EXCHANGE, RabbitMQGatewayConfig.LOG_ROUTER_KEY, logMsg);
     }
 
     public String getUsername() {

@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ToolsMqConfig {
+public class ToolsMQConfig {
 
     public static final String DIRECT_SYNC_EXCHANGE = "sync_direct_exchange";
 

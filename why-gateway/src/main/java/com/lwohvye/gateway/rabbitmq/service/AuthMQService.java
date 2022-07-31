@@ -19,7 +19,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.lwohvye.api.modules.system.domain.vo.UserBaseVo;
 import com.lwohvye.config.LocalCoreConfig;
-import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
+import com.lwohvye.gateway.rabbitmq.config.RabbitMQGatewayConfig;
 import com.lwohvye.gateway.security.service.UserLocalCache;
 import com.lwohvye.sysadaptor.service.ISysUserFeignClientService;
 import com.lwohvye.utils.json.JsonUtils;
@@ -51,7 +51,7 @@ public class AuthMQService {
         var logMap = Map.of("description", "记录用户登录信息", "logType", "Auth", "params", record);
         var logMsg = new AmqpMsgEntity().setMsgType("authLog").setMsgData(JsonUtils.toJSONString(logMap)).setOrigin(LocalCoreConfig.ORIGIN);
         // TODO: 2022/3/20 消费侧
-        rabbitMQProducerService.sendMsg(RabbitMqGatewayConfig.TOPIC_SYNC_EXCHANGE, RabbitMqGatewayConfig.LOG_ROUTER_KEY, logMsg);
+        rabbitMQProducerService.sendMsg(RabbitMQGatewayConfig.TOPIC_SYNC_EXCHANGE, RabbitMQGatewayConfig.LOG_ROUTER_KEY, logMsg);
     }
     //    ----------------------登录失败-----------------------------
 

@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.lwohvye.sysadaptor.handler;
+package com.lwohvye.handler;
 
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;

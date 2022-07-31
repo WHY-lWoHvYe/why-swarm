@@ -1,6 +1,6 @@
 package com.lwohvye.tools.consumer;
 
-import com.lwohvye.tools.config.ToolsMqConfig;
+import com.lwohvye.tools.config.ToolsMQConfig;
 import com.lwohvye.tools.utils.MailUtils;
 import com.lwohvye.utils.json.JsonUtils;
 import com.lwohvye.utils.rabbitmq.AmqpMsgEntity;
@@ -27,7 +27,7 @@ public class ToolsMsgConsumer extends YRabbitAbstractConsumer {
     }
 
     @RabbitHandler
-    @RabbitListener(queues = ToolsMqConfig.MAIL_COMMON_QUEUE)
+    @RabbitListener(queues = ToolsMQConfig.MAIL_COMMON_QUEUE)
     public void sendMailEvent(String amqpMsgEntityStr) {
         baseConsumer(amqpMsgEntityStr, null, null, msgEntity -> {
             var msgData = msgEntity.getMsgData();

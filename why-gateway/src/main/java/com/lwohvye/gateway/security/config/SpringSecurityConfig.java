@@ -16,7 +16,7 @@
 package com.lwohvye.gateway.security.config;
 
 import com.lwohvye.config.security.SimpleSecurityConfig;
-import com.lwohvye.gateway.rabbitmq.config.RabbitMqGatewayConfig;
+import com.lwohvye.gateway.rabbitmq.config.RabbitMQGatewayConfig;
 import com.lwohvye.gateway.rabbitmq.service.RabbitMQProducerService;
 import com.lwohvye.gateway.security.config.bean.SecurityProperties;
 import com.lwohvye.gateway.security.security.CustomAccessDecisionManager;
@@ -221,7 +221,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             final JwtUserDto jwtUserDto = (JwtUserDto) authentication.getPrincipal();
             // 用户登录成功后，写一条消息
             var authSuccessMsg = new AmqpMsgEntity().setMsgType("auth").setMsgData(jwtUserDto.getUser().toString()).setExtraData("saveAuthorizeLog");
-            rabbitMQProducerService.sendMsg(RabbitMqGatewayConfig.DIRECT_SYNC_EXCHANGE, RabbitMqGatewayConfig.AUTH_LOCAL_ROUTE_KEY, authSuccessMsg);
+            rabbitMQProducerService.sendMsg(RabbitMQGatewayConfig.DIRECT_SYNC_EXCHANGE, RabbitMQGatewayConfig.AUTH_LOCAL_ROUTE_KEY, authSuccessMsg);
 
             // 返回 token 与 用户信息
             var authInfo = Map.of("token", properties.getTokenStartWith() + token, "user", jwtUserDto);
@@ -254,7 +254,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     infoMap.put("lockedIp", lockedIp);
                     var authFailedMsg = new AmqpMsgEntity().setMsgType("auth").setMsgData(JsonUtils.toJSONString(infoMap)).setExtraData("solveAuthFailed");
                     //  发送消息
-                    rabbitMQProducerService.sendMsg(RabbitMqGatewayConfig.DIRECT_SYNC_EXCHANGE, RabbitMqGatewayConfig.AUTH_LOCAL_ROUTE_KEY, authFailedMsg);
+                    rabbitMQProducerService.sendMsg(RabbitMQGatewayConfig.DIRECT_SYNC_EXCHANGE, RabbitMQGatewayConfig.AUTH_LOCAL_ROUTE_KEY, authFailedMsg);
                 }
             }
             // 返回错误信息。用下面的sendError会被EntryPoint拦截并覆盖。

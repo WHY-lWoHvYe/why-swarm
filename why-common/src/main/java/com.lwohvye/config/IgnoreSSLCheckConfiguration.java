@@ -1,4 +1,4 @@
-package com.lwohvye.sysadaptor.config;
+package com.lwohvye.config;
 
 import feign.Client;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
