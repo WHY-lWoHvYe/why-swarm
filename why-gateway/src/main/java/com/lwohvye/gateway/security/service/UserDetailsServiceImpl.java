@@ -59,7 +59,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             List<Long> dataScopes = jwtUserDto.getDataScopes();
             dataScopes.clear();
             var deptEntity = deptFeignClientService.queryEnabledDeptIds(userInner.getId(), userInner.getDeptId());
-            var deptIds = ResultUtil.getListFromResp(deptEntity, Long.class);
+            var deptIds = ResultUtil.getListFromResp(deptEntity);
             dataScopes.addAll(deptIds);
         } else {
             jwtUserDto = userLocalCache.getUserDB(username);

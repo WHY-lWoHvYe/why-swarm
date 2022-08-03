@@ -15,7 +15,6 @@
  */
 package com.lwohvye.gateway.security.security.filter;
 
-import com.lwohvye.api.modules.system.service.dto.ResourceDto;
 import com.lwohvye.constant.SecurityConstant;
 import com.lwohvye.gateway.security.config.SpringSecurityConfig;
 import com.lwohvye.sysadaptor.service.ISysResourceFeignClientService;
@@ -65,7 +64,7 @@ public class CustomFilterInvocationSecurityMetadataSource implements FilterInvoc
         // Lookup your database (or other source) using this information and populate the
         // list of attributes
         var resourcesEntity = resourceFeignClientService.queryAllRes();
-        var resources = ResultUtil.getListFromResp(resourcesEntity, ResourceDto.class);
+        var resources = ResultUtil.getListFromResp(resourcesEntity);
         securityConfigs = resources.stream() //获取数据库中的所有资源信息，即本案例中的resource以及对应的role
                 .filter(resource -> antPathMatcher.match(resource.getPattern(), url) // URI匹配
                                     && !resource.getRoleCodes().isEmpty() // 有关联角色（需要特定角色权限）

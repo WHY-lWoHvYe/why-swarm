@@ -15,7 +15,6 @@
  */
 package com.lwohvye.gateway.security.strategy;
 
-import com.lwohvye.api.modules.system.service.dto.RoleSmallDto;
 import com.lwohvye.gateway.security.annotation.UserTypeHandlerAnno;
 import com.lwohvye.gateway.security.enums.UserTypeEnum;
 import com.lwohvye.sysadaptor.service.ISysRoleFeignClientService;
@@ -60,7 +59,7 @@ public final class NormalUserTypeStrategy implements AUserTypeStrategy {
     public List<GrantedAuthority> grantedAuth(Long userId) {
         log.warn(" banana：自由的气息，蕉迟但到。");
         var roleEntity = roleFeignClientService.queryByUid(userId);
-        var roles = ResultUtil.getListFromResp(roleEntity, RoleSmallDto.class);
+        var roles = ResultUtil.getListFromResp(roleEntity);
         var permissions = roles.stream().map(role -> "ROLE_" + role.getCode().toUpperCase()).collect(Collectors.toSet());
         return permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }

@@ -5,6 +5,7 @@ import com.lwohvye.api.modules.system.api.SysUserAPI;
 import com.lwohvye.api.modules.system.domain.User;
 import com.lwohvye.api.modules.system.domain.vo.UserPassVo;
 import com.lwohvye.sysadaptor.service.fallback.SysUserFallbackFactory;
+import com.lwohvye.utils.result.ResultInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,19 +18,19 @@ public interface ISysUserFeignClientService extends SysUserAPI {
 
     @Log("新增用户")
     @Override
-    ResponseEntity<Object> create(User resources);
+    ResponseEntity<ResultInfo<String>> create(User resources);
 
     @Log("修改用户")
     @Override
-    ResponseEntity<Object> update(User resources) throws Exception;
+    ResponseEntity<ResultInfo<String>> update(User resources) throws Exception;
 
     @Log("删除用户")
     @Override
-    ResponseEntity<Object> delete(Set<Long> ids);
+    ResponseEntity<ResultInfo<String>> delete(Set<Long> ids);
 
     @Log("修改密码")
     @Override
-    ResponseEntity<Object> updatePass(UserPassVo passVo) throws Exception;
+    ResponseEntity<ResultInfo<String>> updatePass(UserPassVo passVo) throws Exception;
 
     // 通过RequestMapping的headers属性设置。这里可以直接获取配置文件中的属性，试试能不能动态的获取一些属性，比如通过SpEL表达式
     @PostMapping(value = "/createUser1", headers = {"Content-Type=application/json;charset=UTF-8", "App-Secret=${app.secret}"})

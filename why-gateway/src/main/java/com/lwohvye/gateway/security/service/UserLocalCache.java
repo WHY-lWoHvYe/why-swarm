@@ -90,7 +90,7 @@ public class UserLocalCache {
         UserInnerDto user;
         try {
             var userEntity = userFeignClientService.queryByName(username);
-            user = ResultUtil.getEntityFromResp(userEntity, UserInnerDto.class);
+            user = ResultUtil.getEntityFromResp(userEntity);
         } catch (EntityNotFoundException e) {
             // SpringSecurity会自动转换UsernameNotFoundException为BadCredentialsException
             throw new UsernameNotFoundException("", e);
@@ -99,7 +99,7 @@ public class UserLocalCache {
             throw new UsernameNotFoundException("");
 
         var deptEntity = deptFeignClientService.queryEnabledDeptIds(user.getId(), user.getDeptId());
-        var dataScopes = ResultUtil.getListFromResp(deptEntity, Long.class);
+        var dataScopes = ResultUtil.getListFromResp(deptEntity);
         var authorities = authHandlerContext.getInstance(Boolean.TRUE.equals(user.getIsAdmin()) ? 1 : 0).grantedAuth(user.getId());
         jwtUserDto = new JwtUserDto(
                 user,
