@@ -2,7 +2,7 @@ package com.lwohvye.config;
 
 import feign.Client;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.ssl.SSLContexts;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +25,7 @@ public class IgnoreSSLCheckConfiguration {
 
     private SSLSocketFactory getSSLSocketFactory() {
         try {
-            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, new TrustAllStrategy()).build();
             return sslContext.getSocketFactory();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
