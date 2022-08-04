@@ -26,7 +26,7 @@
     <version>2.2022.0</version>
 
     <name>why-swarm</name>
-    <url>https://github.com/lWoHvYe/why-swarm</url>
+    <url>https://github.com/WHY-lWoHvYe/why-swarm</url>
     <description>A Swarm based on eladmin</description>
 
     <licenses>
@@ -46,9 +46,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/lWoHvYe/why-swarm.git</connection>
-        <developerConnection>scm:git:ssh://github.com/lWoHvYe/why-swarm.git</developerConnection>
-        <url>https://github.com/lWoHvYe/why-swarm/tree/main</url>
+        <connection>scm:git:git://github.com/WHY-lWoHvYe/why-swarm.git</connection>
+        <developerConnection>scm:git:ssh://github.com/WHY-lWoHvYe/why-swarm.git</developerConnection>
+        <url>https://github.com/WHY-lWoHvYe/why-swarm/tree/main</url>
         <tag>why-swarm-v2.2022.0</tag>
     </scm>
 
