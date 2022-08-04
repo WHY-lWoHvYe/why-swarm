@@ -60,7 +60,7 @@
         <module>why-sys-adaptor</module>
         <module>why-tools</module>
         <module>why-tools-adaptor</module>
-        <!--        <module>why-generator</module>-->
+        <module>why-generator</module>
     </modules>
 
     <properties>
