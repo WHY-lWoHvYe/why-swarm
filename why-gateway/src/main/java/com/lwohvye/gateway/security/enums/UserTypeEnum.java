@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 用户类型的枚举
+ * 用户类型的枚举，这里用枚举，实际上有点不符合开闭原则，加类型至少要改这个类
  *
  * @author Hongyan Wang
  * @date 2021年11月02日 16:51
@@ -28,11 +28,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum UserTypeEnum {
 
+    EXTRA(-5, "使用扩展注解"),
+
     ADMIN(1, "尊贵的VIP"),
     NORMAL(0, "未来的VIP"),
     DEV(-1, "Ctrl C + V");
 
-    private Integer type;
+    private final Integer type;
 
-    private String desc;
+    private final String desc;
 }

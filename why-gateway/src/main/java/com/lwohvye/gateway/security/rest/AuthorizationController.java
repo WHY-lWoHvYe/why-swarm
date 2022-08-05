@@ -29,11 +29,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RRateLimiter;
-import org.redisson.api.RateIntervalUnit;
-import org.redisson.api.RateType;
-import org.redisson.api.RedissonClient;
+import org.redisson.api.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -69,13 +67,13 @@ public class AuthorizationController {
 
     @Operation(summary = "获取用户信息")
     @GetMapping(value = "/info")
-    public ResponseEntity<Object> getUserInfo() {
+    public ResponseEntity<UserDetails> getUserInfo() {
         return ResponseEntity.ok(SecurityUtils.getCurrentUser());
     }
 
     @Operation(summary = "获取验证码")
     @AnonymousGetMapping(value = "/code")
-    public ResponseEntity<Object> getCode() {
+    public ResponseEntity<Map<String, String>> getCode() {
         // 获取运算的结果
         Captcha captcha = loginProperties.getCaptcha();
         String uuid = properties.getCodeKey() + IdUtil.simpleUUID();
@@ -100,7 +98,7 @@ public class AuthorizationController {
      */
     @Hidden
     @GetMapping(value = "/doBusiness5Lock")
-    public ResponseEntity<Object> doBusiness5Lock(HttpServletRequest request) {
+    public ResponseEntity<String> doBusiness5Lock(HttpServletRequest request) {
 
         // --------------Session相关，可考虑接入Redisson的 Spring会话管理 (Spring Session Manager)--------------
 
@@ -119,7 +117,7 @@ public class AuthorizationController {
         // region Java 锁 Lock
         var reentrantLock = new ReentrantLock();
         var condition = reentrantLock.newCondition(); // 条件对象。基于Condition，可以更细粒度的控制等待与唤醒
-        reentrantLock.lock();
+        reentrantLock.lock(); // 加锁究竟放在try-catch外还是放在其中，感觉也有所考量
         // var lockRes = reentrantLock.tryLock(); 加锁成功返回true，否则返回false，这样不会阻塞，也可以设置超时
         try {
             while (!RandomUtil.randomBoolean()) // 条件不满足时，保持await()。这样写避免虚假唤醒
@@ -131,6 +129,14 @@ public class AuthorizationController {
             Thread.currentThread().interrupt(); // 异常后，中断线程。这里只是标记中断，具体中断事宜由线程自己处理
         } finally {
             reentrantLock.unlock();
+        }
+
+
+        try {
+            // 可被中断的获取锁。优先考虑响应中断，可在等待锁的时候中断
+            reentrantLock.lockInterruptibly();
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
         }
 
         //---------------------------------------------------------------
@@ -173,7 +179,27 @@ public class AuthorizationController {
                 lock.unlock();
         }
 
-        // Redisson还提供了联锁（MultiLock）和红锁（RedLock），用于关联多个锁对象（可能来自不同的Redisson实例），加解锁保证几个锁都成功获取或释放（联锁保证全部成功，红锁保证大部分成功）
+        // Redisson还提供了联锁（MultiLock）和红锁（RedLock），用于关联多个锁对象（可能来自不同的Redisson实例），加解锁保证几个锁都成功获取或释放（联锁保证锁全部加成功，红锁保证在大部分节点锁加成功）
+        /*
+        // 锁可以来自不同的实例
+        var lock1 = redissonClient1.getLock("lock1");
+        var lock2 = redissonClient2.getLock("lock2");
+        var lock3 = redissonClient3.getLock("lock3");
+
+        var multiLock = new RedissonMultiLock(lock1, lock2, lock3);
+        // 同时加锁：lock1 lock2 lock3
+        // 所有的锁都上锁成功才算成功。
+        multiLock.lock();
+        ...
+        multiLock.unlock();
+        -----------------------------------------------------------------
+        var redLock = new RedissonRedLock(lock1, lock2, lock3);
+        // 同时加锁：lock1 lock2 lock3
+        // 红锁在大部分节点上加锁成功就算成功。
+        redLock.lock();
+        ...
+        redLock.unlock()
+        */
         // endregion
 
         // region   读写锁 RReadWriteLock
@@ -243,10 +269,23 @@ public class AuthorizationController {
             var res01 = rPermitsRFuture.get(); // 阻塞获取，可加超时
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
 
         // CompletableFuture的getNow(T valueIfAbsent)，本质为Returns the result value (or throws any encountered exception) if completed, else returns the given valueIfAbsent.
-        var resNow01 = rPermitsRFuture.getNow(); // 这里应该是要么返回具体结果，要么就是null之类的，不会阻塞
+        /* 方法过期了，官方给出的替代方案不是很清晰
+         * Use snippet below instead.
+         *
+         * <pre>
+         *                 try {
+         *                     return toCompletableFuture().getNow(null);
+         *                 } catch (Exception e) {
+         *                     return null;
+         *                 }
+         * </pre>
+         *
+         */
+        // var resNow01 = rPermitsRFuture.getNow(); // 这里应该是要么返回具体结果，要么就是null之类的，不会阻塞
         // 异步编程，主体就是Future，而对Future的操作，主体就是那几种
 
         // 获取令牌
@@ -265,6 +304,61 @@ public class AuthorizationController {
 
         // endregion
 
-        return null;
+        // region RKeys
+        RMap map = redissonClient.getMap("mymap"); // 支持map的相关操作，还有各种锁，属于本map纬度的各种锁（本质是把map和给定的key拼了一下）
+        map.getName(); // = mymap
+
+        RKeys keys = redissonClient.getKeys();
+
+        Iterable<String> allKeys = keys.getKeys();
+        Iterable<String> foundedKeys = keys.getKeysByPattern("key*");
+        long numOfDeletedKeys = keys.delete("obj1", "obj2", "obj3");
+        long deletedKeysAmount = keys.deleteByPattern("test?");
+        String randomKey = keys.randomKey();
+        long keysAmount = keys.count();
+        // endregion
+
+        // region Object Bucket 通用对象桶
+        RBucket<String> bucket = redissonClient.getBucket("anyObject");
+        bucket.set("str1");
+        var obj = bucket.get();
+
+        bucket.trySet("str3");
+        bucket.compareAndSet("str4", "str5"); // CAS
+        bucket.getAndSet("str6");
+        // endregion
+
+        // region HyperLogLog 基数估计算法
+        RHyperLogLog<Integer> hpLog = redissonClient.getHyperLogLog("hpLog");
+        hpLog.add(1);
+        hpLog.add(2);
+        hpLog.add(3);
+
+        hpLog.count(); // 里面方法也挺多的
+
+        var longRFuture = hpLog.countAsync();
+        if (longRFuture.isDone()) {
+            try {
+                var aLong = longRFuture.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        // endregion
+
+        // region LongAdder 整长型累加器。对于需要并发对同一对象加减的操作，累加器比Atomic系列性能要高很多
+        RLongAdder atomicLong = redissonClient.getLongAdder("myLongAdder");
+
+        atomicLong.add(12);
+        atomicLong.increment();
+        atomicLong.decrement();
+        atomicLong.sum();
+
+        // 当不再使用整长型累加器对象的时候应该自行手动销毁，如果Redisson对象被关闭（shutdown）了，则不用手动销毁。
+        atomicLong.destroy();
+
+        // endregion
+
+        return ResponseEntity.ok("Finish");
     }
 }

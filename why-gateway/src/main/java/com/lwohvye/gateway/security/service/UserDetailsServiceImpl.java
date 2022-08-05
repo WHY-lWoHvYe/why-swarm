@@ -15,18 +15,14 @@
  */
 package com.lwohvye.gateway.security.service;
 
-import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.lwohvye.gateway.security.config.bean.LoginProperties;
 import com.lwohvye.gateway.security.service.dto.JwtUserDto;
-import com.lwohvye.sysadaptor.service.ISysDeptFeignClientService;
-import com.lwohvye.utils.result.ResultUtil;
+import com.lwohvye.api.modules.system.service.IDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author Zheng Jie
@@ -38,29 +34,24 @@ import java.util.concurrent.ExecutionException;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserLocalCache userLocalCache;
-    private final ISysDeptFeignClientService deptFeignClientService;
+    private final IDataService dataService;
     private final LoginProperties loginProperties;
 
     public void setEnableCache(boolean enableCache) {
         this.loginProperties.setCacheEnable(enableCache);
     }
 
+
     @Override
     public JwtUserDto loadUserByUsername(String username) {
         JwtUserDto jwtUserDto;
         if (loginProperties.isCacheEnable()) {
-            try {
-                jwtUserDto = userLocalCache.userLRUCache.get(username); // 这个Cache在目标不存在时，会执行定义的获取方法，若方法中抛出异常，就是ExecutionException或者UncheckedExecutionException
-            } catch (ExecutionException | UncheckedExecutionException e) { // 当下，这里都是 UncheckedExecutionException
-                throw new UsernameNotFoundException(e.getCause() instanceof RuntimeException re ? re.getMessage() : ""); // 这里大多数都是""，因为抛的时候就是这样，所以不写这么麻烦也可以。只要没成功，都按认证失败处理
-            }
+            jwtUserDto = userLocalCache.userLRUCache.get(username); // 这个Cache在目标不存在时，会执行定义的获取方法，若方法中抛出异常，会直接抛出
             var userInner = jwtUserDto.getUser();
             // 检查dataScope是否修改
             List<Long> dataScopes = jwtUserDto.getDataScopes();
             dataScopes.clear();
-            var deptEntity = deptFeignClientService.queryEnabledDeptIds(userInner.getId(), userInner.getDeptId());
-            var deptIds = ResultUtil.getListFromResp(deptEntity);
-            dataScopes.addAll(deptIds);
+            dataScopes.addAll(dataService.getDeptIds(userInner.getId(), userInner.getDeptId()));
         } else {
             jwtUserDto = userLocalCache.getUserDB(username);
         }

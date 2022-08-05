@@ -36,5 +36,8 @@ public class AuthUserDto {
 
     private String code;
 
+    @NotBlank
+    private String captchaVerification;
+
     private String uuid = "";
 }

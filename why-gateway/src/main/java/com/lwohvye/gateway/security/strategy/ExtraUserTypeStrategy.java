@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2021-2022.  lWoHvYe(Hongyan Wang)
+ *    Copyright (c) 2022.  lWoHvYe(Hongyan Wang)
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,25 +13,13 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.lwohvye.gateway.security.annotation;
 
-import com.lwohvye.gateway.security.enums.UserTypeEnum;
-
-import java.lang.annotation.*;
+package com.lwohvye.gateway.security.strategy;
 
 /**
- * 用户类型注解
+ * 留给外部的一个扩展点，通过继承该类并添加注解来扩展UserType。另外父类为密封类，该子类标记为了非密封类
  *
- * @author Hongyan Wang
- * @date 2021年11月02日 16:47
+ * @date 2022/5/1 2:44 PM
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface UserTypeHandlerAnno {
-    UserTypeEnum value() default UserTypeEnum.EXTRA;
-
-    // 扩展使用
-    String typeName() default "";
+public abstract non-sealed class ExtraUserTypeStrategy implements AUserTypeStrategy {
 }

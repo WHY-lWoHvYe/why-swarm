@@ -15,9 +15,13 @@
  */
 package com.lwohvye.gateway.security.security.filter;
 
+import com.anji.captcha.model.vo.CaptchaVO;
+import com.anji.captcha.service.CaptchaService;
 import com.lwohvye.config.RsaProperties;
 import com.lwohvye.gateway.security.service.dto.AuthUserDto;
-import com.lwohvye.utils.*;
+import com.lwohvye.utils.RsaUtils;
+import com.lwohvye.utils.SpringContextHolder;
+import com.lwohvye.utils.StringUtils;
 import com.lwohvye.utils.json.JsonUtils;
 import com.lwohvye.utils.redis.RedisUtils;
 import com.lwohvye.utils.result.ResultUtil;
@@ -32,6 +36,7 @@ import org.springframework.util.Assert;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * AuthenticationFilter that supports rest login(json login) and form login.
@@ -40,6 +45,19 @@ import java.io.InputStream;
  */
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+    private RedisUtils redisUtils;
+    private CaptchaService captchaService;
+
+    // @PostConstruct
+    // public void doInit() {
+    //     SpringContextHolder.addCallBacks(this::doRegister);
+    // }
+
+    public void doRegister() {
+        if (Objects.isNull(redisUtils)) redisUtils = SpringContextHolder.getBean(RedisUtils.class);
+        if (Objects.isNull(captchaService)) captchaService = SpringContextHolder.getBean(CaptchaService.class);
+    }
+
     @Override
     @SneakyThrows
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -47,7 +65,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         //attempt Authentication when Content-Type is json
         if (request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
             UsernamePasswordAuthenticationToken authRequest;
-            var redisUtils = SpringContextHolder.getBean(RedisUtils.class);
 
             try (InputStream is = request.getInputStream()) {
                 var authUser = JsonUtils.toJavaObject(is, AuthUserDto.class);
@@ -69,18 +86,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 var password = authUser.getPassword();
                 password = StringUtils.isNotBlank(password) ? RsaUtils.decryptByPrivateKey(RsaProperties.privateKey, password) : "";
 
-                // 查询验证码
-                String code = (String) redisUtils.get(authUser.getUuid());
-                // 清除验证码
-                redisUtils.delete(authUser.getUuid());
-
-                if (StringUtils.isBlank(code)) {
-                    ResultUtil.resultJson(response, HttpServletResponse.SC_BAD_REQUEST, "验证码不存在或已过期");
-                    return null;
-                }
-
-                if (StringUtils.isBlank(authUser.getCode()) || !authUser.getCode().equalsIgnoreCase(code)) {
-                    ResultUtil.resultJson(response, HttpServletResponse.SC_BAD_REQUEST, "验证码错误");
+                // 前端回传二次验证参数
+                var captchaVO = new CaptchaVO();
+                captchaVO.setCaptchaVerification(authUser.getCaptchaVerification());
+                // 对参数进行验证
+                var verifyRes = captchaService.verification(captchaVO);
+                if (!verifyRes.isSuccess()) {
+                    //验证码校验失败，返回信息告诉前端
+                    ResultUtil.resultJson(response, HttpServletResponse.SC_BAD_REQUEST, verifyRes.getRepMsg());
                     return null;
                 }
 
@@ -95,7 +108,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             // UserDetailService, 用户认证通过Provider来做，所以Provider需要拿到系统已经保存的认证信息，获取用户信息的接口spring-security抽象成UserDetailService。
             // AuthenticationToken, 所有提交给AuthenticationManager的认证请求都会被封装成一个Token的实现
             // SecurityContext，当用户通过认证之后，就会为这个用户生成一个唯一的SecurityContext，里面包含用户的认证信息Authentication。
-            // 通过SecurityContext我们可以获取到用户的标识Principle和授权信息GrantedAuthrity。在系统的任何地方只要通过SecurityHolder.getSecruityContext()就可以获取到SecurityContext。
+            // 通过SecurityContext我们可以获取到用户的标识Principle和授权信息GrantedAuthority。在系统的任何地方只要通过SecurityHolder.getSecurityContext()就可以获取到SecurityContext。
             /*
              * 尝试对通过Authentication实例对象封装的身份信息进行验证。
              * 如果验证成功，则返回完全填充的Authentication对象（包括授予的权限）。
