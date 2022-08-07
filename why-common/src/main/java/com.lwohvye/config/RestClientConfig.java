@@ -21,6 +21,7 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 @Configuration
+@ConditionalOnBean(RestTemplateBuilder.class)
 public class RestClientConfig {
 
     //boot -->spring   applicationContext.xml --- @Configuration配置   ConfigBean = applicationContext.xml
