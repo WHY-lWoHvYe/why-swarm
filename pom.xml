@@ -79,6 +79,7 @@
         <io.swagger.version>1.6.4</io.swagger.version>
         <druid.version>1.2.8</druid.version>
         <hutool.version>5.7.18</hutool.version>
+        <tp.feign-client>11.9.1</tp.feign-client>
         <fastutil.version>8.5.6</fastutil.version>
         <lombok.version>1.18.22</lombok.version>
         <commons-pool2.version>2.11.1</commons-pool2.version>
@@ -215,6 +216,12 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/io.github.openfeign/feign-httpclient -->
+            <dependency>
+                <groupId>io.github.openfeign</groupId>
+                <artifactId>feign-httpclient</artifactId>
+                <version>${tp.feign-client}</version>
             </dependency>
 
             <!-- ip2region IP库 -->
