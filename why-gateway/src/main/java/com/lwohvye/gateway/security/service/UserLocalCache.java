@@ -18,8 +18,6 @@ package com.lwohvye.gateway.security.service;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.lwohvye.api.modules.system.service.IDataService;
-import com.lwohvye.api.modules.system.service.IUserService;
 import com.lwohvye.api.modules.system.service.dto.UserInnerDto;
 import com.lwohvye.config.LocalCoreConfig;
 import com.lwohvye.exception.EntityNotFoundException;
@@ -27,8 +25,11 @@ import com.lwohvye.gateway.rabbitmq.config.RabbitMQGatewayConfig;
 import com.lwohvye.gateway.rabbitmq.service.RabbitMQProducerService;
 import com.lwohvye.gateway.security.service.dto.JwtUserDto;
 import com.lwohvye.gateway.security.strategy.AuthHandlerContext;
+import com.lwohvye.sysadaptor.service.ISysDeptFeignClientService;
+import com.lwohvye.sysadaptor.service.ISysUserFeignClientService;
 import com.lwohvye.utils.StringUtils;
 import com.lwohvye.utils.rabbitmq.AmqpMsgEntity;
+import com.lwohvye.utils.result.ResultUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -49,11 +50,11 @@ public class UserLocalCache {
 
     @Lazy // 循环依赖
     @Autowired
-    private IUserService userService;
+    private ISysUserFeignClientService userFeignClientService;
 
     @Lazy
     @Autowired
-    private IDataService dataService;
+    private ISysDeptFeignClientService deptFeignClientService;
 
     @Autowired
     private AuthHandlerContext authHandlerContext;
@@ -86,7 +87,8 @@ public class UserLocalCache {
         JwtUserDto jwtUserDto;
         UserInnerDto user;
         try {
-            user = userService.findInnerUserByName(username);
+            var userEntity = userFeignClientService.queryByName(username);
+            user = ResultUtil.getEntityFromResp(userEntity);
         } catch (EntityNotFoundException e) {
             // SpringSecurity会自动转换UsernameNotFoundException为BadCredentialsException
             throw new UsernameNotFoundException("", e);
@@ -97,9 +99,11 @@ public class UserLocalCache {
             throw new InternalAuthenticationServiceException("用户已锁定");
 
         var authorities = authHandlerContext.getInstance(Boolean.TRUE.equals(user.getIsAdmin()) ? 1 : 0).grantedAuth(user.getId());
+        var deptEntity = deptFeignClientService.queryEnabledDeptIds(user.getId(), user.getDeptId());
+        var dataScopes = ResultUtil.getListFromResp(deptEntity);
         jwtUserDto = new JwtUserDto(
                 user,
-                dataService.getDeptIds(user.getId(), user.getDeptId()),
+                dataScopes,
                 authorities
         );
         return jwtUserDto;

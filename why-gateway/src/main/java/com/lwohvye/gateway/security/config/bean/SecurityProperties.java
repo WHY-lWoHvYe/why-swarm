@@ -46,6 +46,9 @@ public class SecurityProperties {
      */
     private Long tokenValidityInSeconds = 7200000L;
 
+    // refreshToken 有效时间
+    private Long refreshTokenExpireInHours = 6L;
+
     /**
      * 验证码 key
      */

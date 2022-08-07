@@ -15,8 +15,8 @@
     <dependencies>
         <dependency>
             <groupId>com.lwohvye</groupId>
-            <artifactId>eladmin-common</artifactId>
-            <version>${el.core.version}</version>
+            <artifactId>why-common</artifactId>
+            <version>${project.core.version}</version>
         </dependency>
 
         <dependency>

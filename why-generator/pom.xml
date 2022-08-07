@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>com.lwohvye</groupId>
-            <artifactId>eladmin-generator</artifactId>
+            <artifactId>unicorn-cd-generator</artifactId>
             <version>${el.core.version}</version>
         </dependency>
         <dependency>

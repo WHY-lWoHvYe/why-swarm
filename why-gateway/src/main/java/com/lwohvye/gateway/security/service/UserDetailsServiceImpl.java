@@ -17,10 +17,13 @@ package com.lwohvye.gateway.security.service;
 
 import com.lwohvye.gateway.security.config.bean.LoginProperties;
 import com.lwohvye.gateway.security.service.dto.JwtUserDto;
-import com.lwohvye.api.modules.system.service.IDataService;
+import com.lwohvye.sysadaptor.service.ISysDeptFeignClientService;
+import com.lwohvye.utils.result.ResultUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -29,12 +32,12 @@ import java.util.List;
  * @date 2018-11-22
  */
 // 这里声明了UserDetailsService的实现使用这一个。因为该接口有多个实现
-@Service("userDetailsService")
+@Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements ReactiveUserDetailsService {
 
     private final UserLocalCache userLocalCache;
-    private final IDataService dataService;
+    private final ISysDeptFeignClientService deptFeignClientService;
     private final LoginProperties loginProperties;
 
     public void setEnableCache(boolean enableCache) {
@@ -43,7 +46,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 
     @Override
-    public JwtUserDto loadUserByUsername(String username) {
+    public Mono<UserDetails> findByUsername(String username) {
         JwtUserDto jwtUserDto;
         if (loginProperties.isCacheEnable()) {
             jwtUserDto = userLocalCache.userLRUCache.get(username); // 这个Cache在目标不存在时，会执行定义的获取方法，若方法中抛出异常，会直接抛出
@@ -51,10 +54,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             // 检查dataScope是否修改
             List<Long> dataScopes = jwtUserDto.getDataScopes();
             dataScopes.clear();
-            dataScopes.addAll(dataService.getDeptIds(userInner.getId(), userInner.getDeptId()));
+            var resultInfo = deptFeignClientService.queryEnabledDeptIds(userInner.getId(), userInner.getDeptId());
+            dataScopes.addAll(ResultUtil.getListFromResp(resultInfo));
         } else {
             jwtUserDto = userLocalCache.getUserDB(username);
         }
-        return jwtUserDto;
+        return Mono.just(jwtUserDto);
     }
 }

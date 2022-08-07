@@ -23,7 +23,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = {"com.lwohvye.sysadaptor.service"})
+@EnableFeignClients
 public class YGatewayApplication {
 
     public static void main(String[] args) {

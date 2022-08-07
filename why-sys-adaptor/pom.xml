@@ -19,7 +19,7 @@
         <!--    对api模块进行适配    -->
         <dependency>
             <groupId>com.lwohvye</groupId>
-            <artifactId>eladmin-api</artifactId>
+            <artifactId>unicorn-sys-api</artifactId>
             <version>${el.core.version}</version>
         </dependency>
 

@@ -15,7 +15,6 @@
  */
 package com.lwohvye.gateway.security.config;
 
-import com.lwohvye.api.modules.system.service.IResourceService;
 import com.lwohvye.config.security.SimpleSecurityConfig;
 import com.lwohvye.gateway.rabbitmq.config.RabbitMQGatewayConfig;
 import com.lwohvye.gateway.rabbitmq.service.RabbitMQProducerService;
@@ -24,11 +23,10 @@ import com.lwohvye.gateway.security.security.CustomAccessDecisionManager;
 import com.lwohvye.gateway.security.security.JwtAuthTokenConfigurer;
 import com.lwohvye.gateway.security.security.TokenProvider;
 import com.lwohvye.gateway.security.security.filter.CustomFilterInvocationSecurityMetadataSource;
-import com.lwohvye.gateway.security.security.handler.CustomLogoutHandler;
-import com.lwohvye.gateway.security.security.handler.CustomLogoutSuccessHandler;
 import com.lwohvye.gateway.security.security.handler.JwtAccessDeniedHandler;
 import com.lwohvye.gateway.security.security.handler.JwtAuthenticationEntryPoint;
 import com.lwohvye.gateway.security.service.dto.JwtUserDto;
+import com.lwohvye.sysadaptor.service.ISysResourceFeignClientService;
 import com.lwohvye.utils.StringUtils;
 import com.lwohvye.utils.json.JsonUtils;
 import com.lwohvye.utils.rabbitmq.AmqpMsgEntity;
@@ -36,6 +34,7 @@ import com.lwohvye.utils.result.ResultUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -82,6 +81,7 @@ import java.util.Objects;
 // 设置 prePostEnabled 为 true ，则开启了基于表达式的方法安全控制。通过表达式运算结果的布尔值来决定是否可以访问（true 开放， false 拒绝 ）
 // 设置 securedEnabled 为 true ，就开启了角色注解 @Secured ，该注解功能要简单的多，默认情况下只能基于角色（默认需要带前缀 ROLE_）集合来进行访问控制决策。
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class SpringSecurityConfig {
 
     private final SecurityProperties properties;
@@ -91,7 +91,7 @@ public class SpringSecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final ApplicationContext applicationContext;
     private final UserDetailsService userDetailsService;
-    private final IResourceService resourceService;
+    private final ISysResourceFeignClientService resourceFeignClientService;
     private final RabbitMQProducerService rabbitMQProducerService;
 
     @Bean
@@ -125,8 +125,8 @@ public class SpringSecurityConfig {
                 .and()
                 .logout()
                 .logoutUrl("/auth/logout")
-                .addLogoutHandler(new CustomLogoutHandler(tokenProvider))
-                .logoutSuccessHandler(new CustomLogoutSuccessHandler())
+                // .addLogoutHandler(new CustomLogoutHandler(tokenProvider))
+                // .logoutSuccessHandler(new CustomLogoutSuccessHandler())
                 // 防止iframe 造成跨域
                 .and()
                 .headers()
@@ -175,7 +175,7 @@ public class SpringSecurityConfig {
      */
     @Bean
     public FilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource() {
-        return new CustomFilterInvocationSecurityMetadataSource(applicationContext, resourceService);
+        return new CustomFilterInvocationSecurityMetadataSource(applicationContext, resourceFeignClientService);
     }
 
     /**
@@ -208,7 +208,7 @@ public class SpringSecurityConfig {
             // UserDetails userDetails = userDetailsService.loadUserByUsername(userInfo.getUsername());
             // Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             // SecurityContextHolder.getContext().setAuthentication(authentication);
-            String token = tokenProvider.createToken(authentication);
+            String token = tokenProvider.createToken(authentication, true);
             final JwtUserDto jwtUserDto = (JwtUserDto) authentication.getPrincipal();
             // 用户登录成功后，写一条消息
             var authSuccessMsg = new AmqpMsgEntity().setMsgType("authSave").setMsgData(jwtUserDto.getUser().toString()).setExtraData("saveAuthorizeLog");

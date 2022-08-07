@@ -15,10 +15,11 @@
  */
 package com.lwohvye.gateway.security.strategy;
 
-import com.lwohvye.api.modules.system.service.IRoleService;
 import com.lwohvye.gateway.security.annotation.UserTypeHandlerAnno;
 import com.lwohvye.gateway.security.enums.UserTypeEnum;
+import com.lwohvye.sysadaptor.service.ISysRoleFeignClientService;
 import com.lwohvye.utils.SpringContextHolder;
+import com.lwohvye.utils.result.ResultUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
 public final class NormalUserTypeStrategy implements AUserTypeStrategy {
 
     @Autowired
-    private IRoleService roleService;
+    private ISysRoleFeignClientService roleFeignClientService;
 
     /**
      * 属性注入。这里不使用@PostConstruct后置处理，是因为之前有验证在执行后置处理的时候，SpringContextHolder还无法获取到相关的bean（因为applicationContext还未注入）
@@ -50,14 +51,15 @@ public final class NormalUserTypeStrategy implements AUserTypeStrategy {
      */
     @Override
     public void doInit() {
-        if (Objects.isNull(roleService))
-            this.roleService = SpringContextHolder.getBean(IRoleService.class);
+        if (Objects.isNull(roleFeignClientService))
+            this.roleFeignClientService = SpringContextHolder.getBean(ISysRoleFeignClientService.class);
     }
 
     @Override
     public List<GrantedAuthority> grantedAuth(Long userId) {
         log.warn(" banana：自由的气息，蕉迟但到。");
-        var roles = roleService.findByUserId(userId);
+        var roleEntity = roleFeignClientService.queryByUid(userId);
+        var roles = ResultUtil.getListFromResp(roleEntity);
         var permissions = roles.stream().map(role -> "ROLE_" + role.getCode().toUpperCase()).collect(Collectors.toSet());
         // .flatMap(role -> role.getResources().stream())
         // .map(Resource::getPattern)

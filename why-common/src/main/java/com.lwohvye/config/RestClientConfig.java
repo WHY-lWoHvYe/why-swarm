@@ -67,7 +67,7 @@ public class RestClientConfig {
         var interceptors = restTemplate.getInterceptors();
         if (CollectionUtils.isEmpty(interceptors))
             interceptors = new ArrayList<>();
-        interceptors.add(new com.lwohvye.sysadaptor.config.RestTemplateSimInterceptor());
+        interceptors.add(new RestTemplateSimInterceptor());
         restTemplate.setInterceptors(interceptors);
 
         return restTemplate;

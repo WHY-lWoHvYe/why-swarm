@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>com.lwohvye</groupId>
-            <artifactId>eladmin-common</artifactId>
+            <artifactId>unicorn-common</artifactId>
             <version>${el.core.version}</version>
         </dependency>
 

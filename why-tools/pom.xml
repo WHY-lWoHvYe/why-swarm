@@ -51,7 +51,7 @@
         <!-- tools模块 -->
         <dependency>
             <groupId>com.lwohvye</groupId>
-            <artifactId>eladmin-tools</artifactId>
+            <artifactId>unicorn-tp-tools</artifactId>
             <version>${el.core.version}</version>
         </dependency>
 

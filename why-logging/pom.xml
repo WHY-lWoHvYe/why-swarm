@@ -42,7 +42,7 @@
 
         <dependency>
             <groupId>com.lwohvye</groupId>
-            <artifactId>eladmin-logging</artifactId>
+            <artifactId>unicorn-logging</artifactId>
             <version>${el.core.version}</version>
         </dependency>
 

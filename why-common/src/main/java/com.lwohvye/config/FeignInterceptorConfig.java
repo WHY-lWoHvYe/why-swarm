@@ -1,4 +1,4 @@
-package com.lwohvye.sysadaptor.config;
+package com.lwohvye.config;
 
 import feign.RequestInterceptor;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.lwohvye.sysadaptor.config;
+package com.lwohvye.config;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
