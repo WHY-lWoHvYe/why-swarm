@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>com.lwohvye</groupId>
-            <artifactId>unicorn-common</artifactId>
+            <artifactId>unicorn-core</artifactId>
             <version>${el.core.version}</version>
         </dependency>
 
@@ -32,6 +32,10 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-sleuth-zipkin</artifactId>
         </dependency>
 
         <dependency>

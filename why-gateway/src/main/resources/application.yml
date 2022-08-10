@@ -37,13 +37,17 @@ spring:
         server-addr: http://10.211.55.140:8848
         file-extension: yaml
 
+  zipkin:
+    baseUrl: http://10.211.55.140:9411/
+    discovery-client-enabled: false
+
   #配置 Jpa
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         enable_lazy_no_trans: true
-    #        指定表名解析。spring下可不加。会自动使用
+        #        指定表名解析。spring下可不加。会自动使用
         naming:
           physical-strategy: com.lwohvye.sys.config.common.ServerAwareNamingStrategy
     open-in-view: true
@@ -60,5 +64,13 @@ rsa:
 local:
   sys:
     load-os: true
-#    unauth: true
+    #    unauth: true
     sp-sync-queue: gateway.sp-sync.queue
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          servlet:
+            DispatcherServlet: DEBUG
