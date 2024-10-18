@@ -70,10 +70,10 @@
         <java.version>17</java.version>
         <maven.compiler.release>17</maven.compiler.release>
         <project.core.version>2.2022.0</project.core.version>
-        <el.core.version>3.2.0-SNAPSHOT</el.core.version>
-        <spring-boot.version>2.6.6</spring-boot.version>
-        <spring-cloud.version>2021.0.2</spring-cloud.version>
-        <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
+        <el.core.version>4.4.0-sigma</el.core.version>
+        <spring-boot.version>3.2.9</spring-boot.version>
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <spring-cloud-alibaba.version>2023.0.1.2</spring-cloud-alibaba.version>
         <log4jdbc.version>1.16</log4jdbc.version>
         <springdoc.openapi.version>1.6.2</springdoc.openapi.version>
         <io.swagger.version>1.6.4</io.swagger.version>
